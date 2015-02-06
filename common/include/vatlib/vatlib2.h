@@ -36,8 +36,15 @@ extern "C" {
     General Section
  ***************************************************************************/
 
+/* Versions 0.1.0 through 1.0.0 are in the range 0 to 100
+ * From version 1.0.1 on it's xxyyzz, where x=major, y=minor, z=release
+ * Reason:
+ * Leading zeros changes the number to octal.
+ */
+#define VAT_LIBVATLIB_VERION 902 /* 0.9.2 */
+
 /** Retrieve the release number of the currently running Vatlib build,
- eg 0100.
+ eg 010000.
 */
 VATLIB_API int Vat_GetVersion();
 
@@ -850,7 +857,6 @@ typedef void (* VatAircraftConfigHandler_f)(
     VatSessionID session,
     const char *sender,
     const char *aircraftConfig,
-    bool isBroadcast,
     void *ref);
 
 /**
@@ -2179,6 +2185,10 @@ VATLIB_API void Vat_SendAircraftConfig(
     const char *receiver,
     const char *aircraftConfig);
 
+VATLIB_API void Vat_SendAircraftConfigBroadcast(
+    VatSessionID session,
+    const char *aircraftConfig);
+
 VATLIB_API void Vat_SendCustomPilotPacket(
     VatSessionID session,
     const char *callsign,
@@ -2267,6 +2277,7 @@ VATLIB_API void Vat_RequestWeather(
 
 #if defined(__cplusplus) && defined(VVL_BUILDING_LIB)
 
+class CAudioProducerConsumer;
 class CAudioProducer;
 class CAudioConsumer;
 class UDPAudioPort;
@@ -2278,34 +2289,33 @@ class CLocalOutputCodec;
 class CAudioMixer;
 class CConcatenatedFilePlayer;
 class CAudioService;
+typedef CAudioProducerConsumer             *VatAudioProducerConsumer;
 typedef CAudioProducer                     *VatAudioProducer;
 typedef CAudioConsumer                     *VatAudioConsumer;
 typedef UDPAudioPort                       *VatUDPAudioPort;
 typedef VoiceChannel                       *VatVoiceChannel;
-typedef CDirectVoiceLink                   *VatDirectVoiceLink;
-typedef CFileBasedRecorder                 *VatFileBasedRecorder;
 typedef CLocalInputCodec                   *VatLocalInputCodec;
 typedef CLocalOutputCodec                  *VatLocalOutputCodec;
 typedef CAudioMixer                        *VatAudioMixer;
-typedef CConcatenatedFilePlayer            *VatConcatenatedFilePlayer;
 typedef CAudioService                      *VatAudioService;
 
 #else
 
-struct VatProducerConsumer_tag;
 struct VatUDPAudioPort_tag;
 struct VatAudioService_tag;
+struct VatProducer_tag;
+struct VatConsumer_tag;
+struct VatProducerConsumer_tag;
+typedef struct VatProducerConsumer_tag         *VatAudioProducerConsumer;
+typedef struct VatProducer_tag                 *VatAudioProducer;
+typedef struct VatConsumer_tag                 *VatAudioConsumer;
 typedef struct VatAudioService_tag             *VatAudioService;
 typedef struct VatUDPAudioPort_tag             *VatUDPAudioPort;
-typedef struct VatProducerConsumer_tag         *VatAudioProducer;
-typedef struct VatProducerConsumer_tag         *VatAudioConsumer;
 typedef struct VatProducerConsumer_tag         *VatVoiceChannel;
-typedef struct VatProducerConsumer_tag         *VatDirectVoiceLink;
-typedef struct VatProducerConsumer_tag         *VatFileBasedRecorder;
-typedef struct VatProducerConsumer_tag         *VatLocalInputCodec;
-typedef struct VatProducerConsumer_tag         *VatLocalOutputCodec;
+typedef struct VatProducer_tag                 *VatLocalInputCodec;
+typedef struct VatConsumer_tag                 *VatLocalOutputCodec;
 typedef struct VatProducerConsumer_tag         *VatAudioMixer;
-typedef struct VatProducerConsumer_tag         *VatConcatenatedFilePlayer;
+
 #endif
 
 // Voice
@@ -2476,11 +2486,30 @@ VATLIB_API void Vat_StopAsyncExecution(VatAudioService audioService);
   nullptr consumer to disconnect it.
   Important: (The producer cannot be nullptr.)
  */
-VATLIB_API void Vat_VoiceConnect(
+VATLIB_API void Vat_ConnectProducerToConsumer(
     VatAudioProducer producer,
     int producerPort,
     VatAudioConsumer consumer,
     int consumerPort);
+
+VATLIB_API void Vat_ConnectProducerConsumerToConsumer(
+    VatAudioProducerConsumer producer,
+    int producerPort,
+    VatAudioConsumer consumer,
+    int consumerPort);
+
+VATLIB_API void Vat_ConnectProducerToProducerConsumer(
+    VatAudioProducer producer,
+    int producerPort,
+    VatAudioProducerConsumer consumer,
+    int consumerPort);
+
+VATLIB_API void Vat_ConnectProducerConsumerToProducerConsumer(
+    VatAudioProducerConsumer producer,
+    int producerPort,
+    VatAudioProducerConsumer consumer,
+    int consumerPort);
+
 
 /**
     \class VatUDPAudioPort
