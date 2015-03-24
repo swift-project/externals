@@ -41,25 +41,36 @@ extern "C" {
  * Reason:
  * Leading zeros changes the number to octal.
  */
-#define VAT_LIBVATLIB_VERION 902 /* 0.9.2 */
+#define VAT_LIBVATLIB_VERION 903 /* 0.9.3 */
 
 /** Retrieve the release number of the currently running Vatlib build,
- eg 010000.
+ eg 903.
 */
 VATLIB_API int Vat_GetVersion();
 
 /** Retrieve a textual description of the current Vatlib build,
- eg "Vatlib V1.0.0 (built Oct 20 2014 11:10:00).
+ eg "Vatlib V0.9.1 (built (built Oct 20 2014 11:10:00).
 */
 VATLIB_API const char *Vat_GetVersionText();
 
+typedef enum
+{
+    SeverityNone,
+    SeverityError,
+    SeverityWarning,
+    SeverityInfo,
+    SeverityDebug
+}
+SeverityLevel;
+
 /**
- * \brief Error handler callback.
- * \param message Error message.
+ * \brief Log handler callback.
+ * \param message Log message.
  *
- * A function of this type is called by vatlib when an error occurs.
+ * A function of this type is called by vatlib when a message is logged.
  */
-typedef void (* VatlibErrorHandler_t)(
+typedef void (* VatlibLogHandler_t)(
+    SeverityLevel level,
     const char *message);
 
 /***************************************************************************
@@ -77,7 +88,8 @@ typedef void (* VatlibErrorHandler_t)(
  * aroud a long time.
  */
 #ifdef __cplusplus
-typedef class PCSBClient *VatSessionID;
+typedef class FSDClient PCSBClient;
+typedef PCSBClient *VatSessionID;
 #else
 typedef void *VatSessionID;
 #endif
@@ -133,6 +145,7 @@ typedef enum
     vatCapsAircraftConfig   = (1 << 7)
 }
 VatCapabilities;
+
 
 /***************************************************************************
     PROTOCOL CONSTANTS
@@ -319,7 +332,7 @@ typedef enum
     vatFlightTypeDVFR
 } VatFlightType;
 
-/** Info query types */
+/** Client query types */
 typedef enum
 {
     /** Flight plan (pilots only, reply is a flight plan mesasge */
@@ -355,22 +368,6 @@ typedef enum
     /**< Helo */
     vatEngineTypeHelo   = 3
 } VatEngineType;
-
-/** Various shared state sent between ATC clients */
-typedef enum
-{
-    /**< Scratchpad comment in data blocks. */
-    vatCCPPropertyTypeScratchPad = 0,
-    /**< Voice capabilities (text, voice, receive only */
-    vatCCPPropertyTypeVoiceType,
-    /**< Assigned squawk code */
-    vatCCPPropertyTypeSquawkCode,
-    /**< Final altitude (obsolete) */
-    vatCCPPropertyTypeFinalAltitude,
-    /**< Temp altitude */
-    vatCCPPropertyTypeTempAltitude,
-    vatCCPPropertyTypeMax
-} VatCCPPropertyType;
 
 /** Operations for a land line */
 typedef enum
@@ -422,8 +419,8 @@ typedef struct
     double longitude;
     /**< True altitude in feet above MSL */
     int altitudeTrue;
-    /**< Altitude ajustment. Add this to true altitude to get pressure altitude (ft MSL) */
-    int altitudeAdjust;
+    /**< Pressure altitude in feet above MSL */
+    int altitudePressure;
     /**< Ground speed in knots */
     int groundSpeed;
     /**< Heading in degrees, clockwise from true north, 0-359 */
@@ -540,8 +537,8 @@ typedef struct
     int floor;
     /** 0 - 8 octets */
     int coverage;
-    /** 1 = true, 0 = false */
-    int icing;
+    /** ?? */
+    int deviation;
     /** 0 - 255 */
     int turbulence;
 }
@@ -570,7 +567,7 @@ typedef struct
     /** ICAO code of destination airport */
     const char *destAirport;
     /** Enroute time - hours */
-    int  enrouteHrs;
+    int enrouteHrs;
     /** Enroute time - minutes */
     int enrouteMins;
     /** Available fuel - hours */
@@ -643,10 +640,10 @@ typedef void (* VatStateChangeHandler_f)(
  * \param to Receiver callsign
  * \param ref User defined data
  */
-typedef void (* VatMessageHandler_f)(
+typedef void (* VatTextMessageHandler_f)(
     VatSessionID session,
-    const char *from,
-    const char *to,
+    const char *sender,
+    const char *receiver,
     const char *message,
     void *ref);
 
@@ -654,7 +651,7 @@ typedef void (* VatMessageHandler_f)(
     is passed in. */
 typedef void (* VatRadioMessageHandler_f)(
     VatSessionID session,
-    const char *from,
+    const char *sender,
     int freqCount,
     int *freqList,
     const char *message,
@@ -663,7 +660,7 @@ typedef void (* VatRadioMessageHandler_f)(
 /** Function signature when a pilot has left the network. */
 typedef void (* VatDeletePilotHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     void *ref);
 
 /**
@@ -671,7 +668,7 @@ typedef void (* VatDeletePilotHandler_f)(
  */
 typedef void (* VatDeleteAtcHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     void *ref);
 
 /**
@@ -679,7 +676,7 @@ typedef void (* VatDeleteAtcHandler_f)(
  */
 typedef void (* VatPilotPositionHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     const VatPilotPosition *position,
     void *ref);
 
@@ -688,7 +685,7 @@ typedef void (* VatPilotPositionHandler_f)(
 */
 typedef void (* VatAtcPositionHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     const VatAtcPosition *position,
     void *ref);
 
@@ -715,7 +712,7 @@ typedef void (* VatPongHandler_f)(
 */
 typedef void (* VatFlightPlanHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     const VatFlightPlan *flightPlan,
     void *ref);
 
@@ -724,18 +721,17 @@ typedef void (* VatFlightPlanHandler_f)(
 */
 typedef void (* VatHandoffRequestHandler_f)(
     VatSessionID session,
-    const char *atcFrom,
-    const char *aircraft,
+    const char *sender,
+    const char *target,
     void *ref);
 
 /**
     Function signature when another ATC has accepted a handoff.
 */
-typedef void (* VatHandoffAcceptanceHandler_f)(
+typedef void (* VatHandoffAcceptedHandler_f)(
     VatSessionID session,
-    const char *atcFrom,
-    const char *atcTo,
-    const char *aircraft,
+    const char *sender,
+    const char *target,
     void *ref);
 
 /**
@@ -743,8 +739,8 @@ typedef void (* VatHandoffAcceptanceHandler_f)(
 */
 typedef void (* VatHandoffCancelHandler_f)(
     VatSessionID session,
-    const char *atcFrom,
-    const char *aircraft,
+    const char *sender,
+    const char *target,
     void *ref);
 
 /**
@@ -762,8 +758,19 @@ typedef void (* VatACARSDataHandler_f)(
 */
 typedef void (* VatACARSRequestHandler_f)(
     VatSessionID session,
-    const char *callsign,
-    const char *airport,
+    const char *sender,
+    const char *data,
+    void *ref);
+
+typedef void (* VatMetarRequestHandler_f)(
+    VatSessionID session,
+    const char *sender,
+    const char *station,
+    void *ref);
+
+typedef void (* VatMetarResponseHandler_f)(
+    VatSessionID session,
+    const char *metar,
     void *ref);
 
 /** Function signature when someone is requesting info from you. This will only be:
@@ -772,18 +779,18 @@ typedef void (* VatACARSRequestHandler_f)(
  */
 typedef void (* VatInfoRequestHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     VatInfoQueryType type,
     const char *data,
     void *ref);
 
-/** Function signature when an info reply is received.
-    For most info replies, only data is passed back, but
+/** Function signature when an info reponse is received.
+    For most info responses, only data is passed back, but
     for an ATC query about another ATC, data2 is also used.
  */
-typedef void (* VatInfoReplyHandler_f)(
+typedef void (* VatInfoResponseHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     VatInfoQueryType type,
     const char *data,
     const char *data2,
@@ -797,21 +804,21 @@ typedef void (* VatInfoReplyHandler_f)(
  */
 typedef void (* VatInfoCAPSReplyHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     int capabilityFlags,
     void *ref);
 
 /** A controller voiceroom has been received. */
 typedef void (* VatVoiceRoomHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     const char *voiceRoom,
     void *ref);
 
 /** A controller ATIS has been received. */
 typedef void (* VatControllerAtisHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     const VatControllerAtis *atis,
     void *ref);
 
@@ -820,8 +827,8 @@ typedef void (* VatControllerAtisHandler_f)(
 typedef void (* VatServerErrorHandler_f)(
     VatSessionID session,
     VatServerError errorCode,
-    const char *message,
-    const char *errData,
+    const char *parameter,
+    const char *description,
     void *ref);
 
 /** Function signature for an incoming temperature and pressure data.
@@ -866,7 +873,7 @@ typedef void (* VatAircraftConfigHandler_f)(
  */
 typedef void (* VatATCClientComHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     const char *data,
     void *ref);
 
@@ -876,7 +883,7 @@ typedef void (* VatATCClientComHandler_f)(
  */
 typedef void (* VatPilotClientComHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     const char *subType,
     void *ref);
 
@@ -886,7 +893,7 @@ typedef void (* VatPilotClientComHandler_f)(
  */
 typedef void (* VatCustomPilotPacketHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     const char *subType,
     const char **data,
     int dataSize,
@@ -898,7 +905,7 @@ typedef void (* VatCustomPilotPacketHandler_f)(
  */
 typedef void (* VatAircraftInfoRequestHandler_f)(
     VatSessionID session,
-    const char *atcFrom,
+    const char *sender,
     void *ref);
 
 /**
@@ -906,8 +913,18 @@ typedef void (* VatAircraftInfoRequestHandler_f)(
  */
 typedef void (* VatAircraftInfoHandler_f)(
     VatSessionID session,
-    const char *pilotFrom,
+    const char *sender,
     const VatAircraftInfo *aircraftInfo,
+    void *ref);
+
+/**
+    Function signature when a pilot is telling us what kind of plane they are.
+ */
+typedef void (* VatLegacyAircraftInfoHandler_f)(
+    VatSessionID session,
+    const char *sender,
+    VatEngineType engineType,
+    const char *cslModel,
     void *ref);
 
 /**
@@ -916,22 +933,17 @@ typedef void (* VatAircraftInfoHandler_f)(
  */
 typedef void (* VatHandleIPCHandler_f)(
     VatSessionID session,
-    const char *from,
+    const char *sender,
     const char *ipcCommand,
     int ipcSlot,
     int ipcValue,
     void *ref);
 
-/**
-    Function signature when the shared state for a plane is being sent to us, perhaps
-    because it changed.
- */
-typedef void (* VatHandleSharedStateHandler_f)(
+typedef void (* VatTargetsScratchpadHandler_f)(
     VatSessionID session,
-    const char *from,
-    const char *plane,
-    VatCCPPropertyType property,
-    const char *data,
+    const char *sender,
+    const char *target,
+    const char *scratchpad,
     void *ref);
 
 /**
@@ -940,7 +952,7 @@ typedef void (* VatHandleSharedStateHandler_f)(
  */
 typedef void (* VatHandleLandlineCommandHandler_f)(
     VatSessionID session,
-    const char *from,
+    const char *sender,
     VatLandlineCmd command,
     VatLandlineType type,
     const char *ip,
@@ -952,8 +964,8 @@ typedef void (* VatHandleLandlineCommandHandler_f)(
  */
 typedef void (* VatHandleTrackingCommandHandler_f)(
     VatSessionID session,
-    const char *from,
-    const char *aircraft,
+    const char *sender,
+    const char *target,
     VatTrackingCmd command,
     void *ref);
 
@@ -962,7 +974,7 @@ typedef void (* VatHandleTrackingCommandHandler_f)(
  */
 typedef void (* VatControllerBreakCommandHandler_f)(
     VatSessionID session,
-    const char *atc,
+    const char *sender,
     bool wantsBreak,
     void *ref);
 
@@ -971,7 +983,7 @@ typedef void (* VatControllerBreakCommandHandler_f)(
  */
 typedef void (* VatHandleSharedStateIDHandler_f)(
     VatSessionID session,
-    const char *atc,
+    const char *sender,
     void *ref);
 
 /**
@@ -979,7 +991,7 @@ typedef void (* VatHandleSharedStateIDHandler_f)(
  */
 typedef void (* VatHandleSharedStateDIHandler_f)(
     VatSessionID session,
-    const char *atc,
+    const char *sender,
     void *ref);
 /**
     Function signature when a flight strip is being pushed to us.
@@ -987,7 +999,7 @@ typedef void (* VatHandleSharedStateDIHandler_f)(
  */
 typedef void (* VatHandlePushStripCommandHandler_f)(
     VatSessionID session,
-    const char *atcCallsign,
+    const char *sender,
     const char *aCCallsign,
     int type,
     const char **annotations,
@@ -998,7 +1010,7 @@ typedef void (* VatHandlePushStripCommandHandler_f)(
  */
 typedef void (* VatHandleHelpCommandHandler_f)(
     VatSessionID session,
-    const char *callsign,
+    const char *sender,
     bool wantsHelp,
     const char *message,
     void *ref);
@@ -1016,7 +1028,8 @@ typedef void (* VatHandleHelpCommandHandler_f)(
  *
  */
 
-VATLIB_API void Vat_SetNetworkErrorHandler(VatlibErrorHandler_t handler);
+VATLIB_API void Vat_SetNetworkLogHandler(SeverityLevel severityLevel, VatlibLogHandler_t handler);
+VATLIB_API void Vat_SetNetworkLogSeverityLevel(SeverityLevel severityLevel);
 
 /**
     \brief ReceiveStateChange callback installer
@@ -1047,9 +1060,9 @@ VATLIB_API void Vat_SetStateChangeHandler(
     \warning Your callback must be thread safe, because it is not garuanteed that
        the callback is always called from the main thread.
   */
-VATLIB_API void Vat_SetMessageHandler(
+VATLIB_API void Vat_SetTextMessageHandler(
     VatSessionID session,
-    VatMessageHandler_f handler,
+    VatTextMessageHandler_f handler,
     void *ref);
 
 /**
@@ -1064,7 +1077,7 @@ VATLIB_API void Vat_SetMessageHandler(
     \warning Your callback must be thread safe, because it is not garuanteed that
        the callback is always called from the main thread.
   */
-VATLIB_API void Vat_SetRadioHandler(
+VATLIB_API void Vat_SetRadioMessageHandler(
     VatSessionID session,
     VatRadioMessageHandler_f handler,
     void *ref);
@@ -1226,7 +1239,7 @@ VATLIB_API void Vat_SetHandoffRequestHandler(
     void *ref);
 
 /**
-    \brief HandoffAcceptance callback installer
+    \brief HandoffAccepted callback installer
 
     Installs a callback notifiying when another controller has
     accepted your previous handoff request and is now tracking the
@@ -1240,9 +1253,9 @@ VATLIB_API void Vat_SetHandoffRequestHandler(
        the callback is always called from the main thread.
     \see Vat_SetHandoffRequestHandler
   */
-VATLIB_API void Vat_SetHandoffAcceptanceHandler(
+VATLIB_API void Vat_SetHandoffAcceptedHandler(
     VatSessionID session,
-    VatHandoffAcceptanceHandler_f handler,
+    VatHandoffAcceptedHandler_f handler,
     void *ref);
 
 /**
@@ -1278,7 +1291,7 @@ VATLIB_API void Vat_SetHandoffCancelHandler(
     \warning Your callback must be thread safe, because it is not garuanteed that
        the callback is always called from the main thread.
   */
-VATLIB_API void Vat_SetACARSDataHandler(
+VATLIB_API void Vat_SetACARSResponseHandler(
     VatSessionID session,
     VatACARSDataHandler_f handler,
     void *ref);
@@ -1301,6 +1314,16 @@ VATLIB_API void Vat_SetACARSRequestHandler(
     VatACARSRequestHandler_f handler,
     void *ref);
 
+VATLIB_API void Vat_SetMetarRequestHandler(
+    VatSessionID session,
+    VatMetarRequestHandler_f handler,
+    void *ref);
+
+VATLIB_API void Vat_SetMetarResponseHandler(
+    VatSessionID session,
+    VatMetarResponseHandler_f handler,
+    void *ref);
+
 /**
     \brief InfoRequest callback installer
 
@@ -1321,9 +1344,9 @@ VATLIB_API void Vat_SetInfoRequestHandler(
     void *ref);
 
 /**
-    \brief InfoReply callback installer
+    \brief InfoResponse callback installer
 
-    Installs a callback notifiying when an ATC client has replied to your info
+    Installs a callback notifiying when a client has replied to your info
     request.
 
     \param session The session ID to be used for this operation.
@@ -1334,9 +1357,9 @@ VATLIB_API void Vat_SetInfoRequestHandler(
        the callback is always called from the main thread.
     \see Vat_SetInfoRequestHandler
   */
-VATLIB_API void Vat_SetInfoReplyHandler(
+VATLIB_API void Vat_SetInfoResponseHandler(
     VatSessionID session,
-    VatInfoReplyHandler_f handler,
+    VatInfoResponseHandler_f handler,
     void *ref);
 
 /**
@@ -1522,6 +1545,11 @@ VATLIB_API void Vat_SetAircraftInfoHandler(
     VatAircraftInfoHandler_f handler,
     void *ref);
 
+VATLIB_API void Vat_SetLegacyAircraftInfoHandler(
+    VatSessionID session,
+    VatLegacyAircraftInfoHandler_f handler,
+    void *ref);
+
 /**
     \brief HandleIPC callback installer
 
@@ -1553,9 +1581,9 @@ VATLIB_API void Vat_SetHandleIPCHandler(
     \warning Your callback must be thread safe, because it is not garuanteed that
        the callback is always called from the main thread.
   */
-VATLIB_API void Vat_SetHandleSharedStateHandler(
+VATLIB_API void Vat_SetTargetScratchpadHandler(
     VatSessionID session,
-    VatHandleSharedStateHandler_f handler,
+    VatTargetsScratchpadHandler_f handler,
     void *ref);
 
 /**
@@ -1817,13 +1845,13 @@ VATLIB_API VatConnectionStatus Vat_GetStatus(VatSessionID session);
     Send a private 1-to-1 chat message.
 
     \param session  The session ID to be used for this operation.
-    \param callsign A string containing the receiver callsign
+    \param receiver A string containing the receiver callsign
     \param message  A string containing the text message
     \return None
 */
 VATLIB_API void Vat_SendTextMessage(
     VatSessionID session,
-    const char *callsign,
+    const char *receiver,
     const char *message);
 
 /**
@@ -1901,41 +1929,39 @@ VATLIB_API void Vat_SendATCUpdate(
     Requests an ATC Handoff.
 
     \param session The session ID to be used for this operation.
-    \param atcCallsign Controller callsign, from which you are requesting
-    \param aircraftCallsign Aircraft callsign, you would to hand off
+    \param receiver Controller callsign, from which you are requesting
+    \param target Aircraft callsign, you would to hand off
     \return None
     \see VatAtcPosition
 */
-VATLIB_API void Vat_RequestHandoff(
-    VatSessionID session,
-    const char *atcCallsign,
-    const char *aircraftCallsign);
+VATLIB_API void Vat_RequestHandoff(VatSessionID session,
+    const char *receiver,
+    const char *target);
 
 /**
-    Approves an ATC Handoff
+    Accept an ATC Handoff
 
     \param session The session ID to be used for this operation.
-    \param atcCallsign Controller callsign, who requested the handoff
-    \param aircraftCallsign Aircraft callsign, which is handed off
+    \param receiver Controller callsign, who requested the handoff
+    \param target Aircraft callsign, which is handed off
     \return None
 */
-VATLIB_API void Vat_ApproveHandoff(
-    VatSessionID session,
-    const char *atcCallsign,
-    const char *aircraftCallsign);
+VATLIB_API void Vat_AcceptHandoff(VatSessionID session,
+    const char *receiver,
+    const char *target);
 
 /**
     Cancel a handoff with another ATC.
 
     \param session The session ID to be used for this operation.
-    \param atcCallsign Controller callsign, who requested the handoff
-    \param aircraftCallsign Aircraft callsign, which is handed off
+    \param receiver Controller callsign, who requested the handoff
+    \param target Aircraft callsign, which is handed off
     \return None
 */
 VATLIB_API void Vat_CancelHandoff(
     VatSessionID session,
-    const char *atcCallsign,
-    const char *aircraftCallsign);
+    const char *receiver,
+    const char *target);
 
 /**
     Amend a flight plan. The one stored on the server will be overwritten
@@ -1951,26 +1977,11 @@ VATLIB_API void Vat_AmendFlightPlan(
     const char *callsign,
     const VatFlightPlan *flightplan);
 
-/**
-    Broadcast a change of shared state to other clients.
-    Typical shared states are temporary/final changes made by the ATC controller, e.g.
-    \li Temporary altitude
-    \li voice capabilities
-    \li etc...
-
-    \param session The session ID to be used for this operation.
-    \param atc It's okay to pass null for this
-    \param plane New full flightplan including all changed you have made.
-    \param property
-    \return None
-    \see VatCCPPropertyType
-*/
-VATLIB_API void Vat_SendSharedState(
+VATLIB_API void Vat_SendTargetsScratchpad(
     VatSessionID session,
-    const char *atc,
-    const char *plane,
-    VatCCPPropertyType property,
-    const char *value);
+    const char *receiver,
+    const char *target,
+    const char *scratchpad);
 
 /**
     Send an ASRC-type ID to check if someone is a next-gen client.
@@ -2191,7 +2202,7 @@ VATLIB_API void Vat_SendAircraftConfigBroadcast(
 
 VATLIB_API void Vat_SendCustomPilotPacket(
     VatSessionID session,
-    const char *callsign,
+    const char *receiver,
     const char *packetSubType,
     const char **data,
     int dataCount);
@@ -2244,23 +2255,27 @@ VATLIB_API void Vat_SendPong(
     WEATHER FUNCTIONS
  ***************************************************************************/
 
-/* Used to request ACARS information. Two info fields are available but only one is required in some cases. Pass nullptr for info2 if it's not
-necessary */
-VATLIB_API void Vat_RequestACARS(
+/* Used to request ACARS information. */
+VATLIB_API void Vat_RequestMetar(
     VatSessionID session,
-    const char *airport);
+    const char *station);
 
-/* Sends ACARS information. Pass nullptr in for a type and data if it's just an acknowledgment packet. */
-/* OPEN ISSUE: do we need this? */
-VATLIB_API void Vat_SendACARS(
+/* Sends ACARS information to receiver. */
+VATLIB_API void Vat_SendMetar(
     VatSessionID session,
-    const char *callsign,
+    const char *receiver,
     const char *data);
 
-/* Sends a request to the server for weather */
+/**
+    Sends a request to the server for weather
+
+    \param session The session ID to be used for this operation.
+    \param station The station whether is requested for
+    \return None
+*/
 VATLIB_API void Vat_RequestWeather(
     VatSessionID session,
-    const char *airport);
+    const char *station);
 
 /****************************************************************
     GENERAL VVL NOTES
@@ -2390,7 +2405,8 @@ typedef void (* VatVoiceChannelRoomIterator_f)(
     const char *name,
     void *ref);
 
-VATLIB_API void Vat_SetVoiceErrorHandler(VatlibErrorHandler_t handler);
+VATLIB_API void Vat_SetVoiceLogHandler(SeverityLevel severityLevel, VatlibLogHandler_t handler);
+VATLIB_API void Vat_SetVoiceLogSeverityLevel(SeverityLevel severityLevel);
 
 /****************************************************************
     Audio Service Routines
@@ -2684,10 +2700,21 @@ VATLIB_API int Vat_GetOutputVolume(
 VATLIB_API bool Vat_IsRecordingAlive(
     VatLocalInputCodec localCodec);
 
-
-
+/** Returns the current input RMS level in dB */
 VATLIB_API double Vat_GetInputRmsLevel(
     VatLocalInputCodec localCodec);
+
+/** Returns the current input Peak level in dB */
+VATLIB_API double Vat_GetInputPeakLevel(
+    VatLocalInputCodec localCodec);
+
+/** Returns the current output RMS level in dB. Range: -180 to 0 dB */
+VATLIB_API double Vat_GetOutputRmsLevel(
+    VatLocalOutputCodec localCodec);
+
+/** Returns the current output Peak level in dB. Range: -180 to 0 dB */
+VATLIB_API double Vat_GetOutputPeakLevel(
+    VatLocalOutputCodec localCodec);
 
 /**
     Vat_IsPlaybackAlive
