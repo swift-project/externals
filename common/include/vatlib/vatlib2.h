@@ -36,15 +36,16 @@ extern "C" {
     General Section
  ***************************************************************************/
 
-/* Versions 0.1.0 through 1.0.0 are in the range 0 to 100
- * From version 1.0.1 on it's xxyyzz, where x=major, y=minor, z=release
- * Reason:
- * Leading zeros changes the number to octal.
- */
-#define VAT_LIBVATLIB_VERION 903 /* 0.9.3 */
+/** Versions 0.1.0 through 1.0.0 are in the range 0 to 100.
+ From version 1.0.1 on it's xxyyzz, where x=major, y=minor, z=release
+ Reason:
+ Leading zeros changes the number to octal.
+*/
+#define VAT_LIBVATLIB_VERION 904
 
-/** Retrieve the release number of the currently running Vatlib build,
- eg 903.
+/**
+ * Retrieve the release number of the currently running Vatlib build,
+ eg 904.
 */
 VATLIB_API int Vat_GetVersion();
 
@@ -53,21 +54,28 @@ VATLIB_API int Vat_GetVersion();
 */
 VATLIB_API const char *Vat_GetVersionText();
 
+/** Log severity levels. They are used within the log handlers to specify
+ the severity of the log message.
+
+ @see VatlibLogHandler_t, Vat_SetVoiceLogHandler, Vat_SetVoiceLogSeverityLevel,
+ Vat_SetNetworkLogHandler, Vat_SetNetworkLogSeverityLevel
+
+*/
 typedef enum
 {
-    SeverityNone,
-    SeverityError,
-    SeverityWarning,
-    SeverityInfo,
-    SeverityDebug
+    SeverityNone,       /**< Severity None. Nothing is logged. */
+    SeverityError,      /**< Severity Error. Only errors are logged. */
+    SeverityWarning,    /**< Severity Warning. Warning and higher is logged. */
+    SeverityInfo,       /**< Severity Info. Info and higher is is logged. */
+    SeverityDebug       /**< Severity Debug. Debug and higher is logged. */
 }
 SeverityLevel;
 
-/**
- * \brief Log handler callback.
- * \param message Log message.
- *
- * A function of this type is called by vatlib when a message is logged.
+/** Log handler callback. A function of this signature is called by vatlib when a message is logged.
+
+ @param level The log message severity.
+ @param message The messages logged by vatlib.
+ @see SeverityLevel
  */
 typedef void (* VatlibLogHandler_t)(
     SeverityLevel level,
@@ -78,15 +86,13 @@ typedef void (* VatlibLogHandler_t)(
  ***************************************************************************/
 
 /**
- * \brief VatSessionID
- *
- * This is an opaque reference to a session.  A session is a single user's connection
- * to the protocol.  A session may be connected multiple times, but its login information
- * can only be specified when disconnected.  Each session has callbacks for incoming data
- * associated with it; these are good for the life of a session but must be set up
- * separately for each session.  For this reason, you probably want to keep your session
- * aroud a long time.
- */
+ VatSessionID is an opaque reference to a session. A session is a single user's connection
+ to the protocol. A session may be connected multiple times, but its login information
+ can only be specified when disconnected. Each session has callbacks for incoming data
+ associated with it; these are good for the life of a session but must be set up
+ separately for each session. For this reason, you probably want to keep your session
+ aroud a long time.
+*/
 #ifdef __cplusplus
 typedef class FSDClient PCSBClient;
 typedef PCSBClient *VatSessionID;
@@ -94,11 +100,18 @@ typedef PCSBClient *VatSessionID;
 typedef void *VatSessionID;
 #endif
 
-VATLIB_API void Vat_sendFsdMessage(
+/** A test method to pass valid FSD message lines as if they have been received from the
+ FSD servers. The message is fully processed and all callbacks are called.
+
+ @param session
+ @param message The FSD message line
+*/
+VATLIB_API void Vat_SendFsdMessage(
     VatSessionID session,
     const char *message);
 
-/** Server type */
+/** Server type
+*/
 typedef enum
 {
     vatServerLegacyFsd,   /**< Legacy FSD. */
@@ -106,43 +119,31 @@ typedef enum
 }
 VatServerType;
 
-/** Connection status */
+/** Connection status
+*/
 typedef enum
 {
-    /** Not yet connected */
-    vatStatusIdle,
-    /** Connecting to server */
-    vatStatusConnecting,
-    /**<  Connection successful (log-in may be in process). */
-    vatStatusConnected,
-    /**<  Disconnecting from server. */
-    vatStatusDisconnecting,
-    /**<  Disconnected from server. */
-    vatStatusDisconnected,
-    /**<  Some kind of error. */
-    vatStatusError
+    vatStatusIdle,          /**< Not yet connected. Deprecated and not used anymore! */
+    vatStatusConnecting,    /**< Connecting to server */
+    vatStatusConnected,     /**< Connection successful (log-in may be in process). */
+    vatStatusDisconnecting, /**< Disconnecting from server. */
+    vatStatusDisconnected,  /**< Disconnected from server. */
+    vatStatusError          /**< Connection error. Deprecated and not used anymore! */
 }
 VatConnectionStatus;
 
-/** Client capability flags */
+/** Client capability flags
+*/
 typedef enum
 {
-    /** None */
-    vatCapsNone             = (1 << 0),
-    /** Can accept ATIS responses */
-    vatCapsAtcInfo          = (1 << 1),
-    /** Can send/receive secondary visibility center points (ATC/Server only) */
-    vatCapsSecondaryPos     = (1 << 2),
-    /** Can send/receive modern model packets */
-    vatCapsModelDesc        = (1 << 3),
-    /** Can send/receive inter-facility coordination packets (ATC only) */
-    vatCapsOngoingCoord     = (1 << 4),
-    /** Can send/receive high-speed position updates (pilot only) */
-    vatCapsInterminPos      = (1 << 5),
-    /** Stealth mode */
-    vatCapsStealth          = (1 << 6),
-    /** Aircraft Config */
-    vatCapsAircraftConfig   = (1 << 7)
+    vatCapsNone             = (1 << 0), /** None */
+    vatCapsAtcInfo          = (1 << 1), /** Can accept ATIS responses */
+    vatCapsSecondaryPos     = (1 << 2), /** Can send/receive secondary visibility center points (ATC/Server only) */
+    vatCapsModelDesc        = (1 << 3), /** Can send/receive modern model packets */
+    vatCapsOngoingCoord     = (1 << 4), /** Can send/receive inter-facility coordination packets (ATC only) */
+    vatCapsInterminPos      = (1 << 5), /** Can send/receive high-speed position updates (pilot only) */
+    vatCapsStealth          = (1 << 6), /** Stealth mode */
+    vatCapsAircraftConfig   = (1 << 7)  /** Aircraft Config */
 }
 VatCapabilities;
 
@@ -161,472 +162,475 @@ VatCapabilities;
 #define VAT_FREQUENCY_ATC 149.999
 
 
-/** Server error codes */
+/** Server error codes
+*/
 typedef enum
 {
-    /** No error */
-    vatServerErrorNone,
-    /** Callsign in use */
-    vatServerErrorCsInUs,
-    /** Callsign invalid */
-    vatServerErrorCallsignInvalid,
-    /** Already registered */
-    vatServerErrorRegistered,
-    /** Syntax error */
-    vatServerErrorSyntax,
-    /** Invalid source in packet */
-    vatServerErrorSrcInvalid,
-    /** Invalid CID/password */
-    vatServerErrorCidInvalid,
-    /** No such callsign */
-    vatServerErrorNoSuchCs,
-    /** No flightplan */
-    vatServerErrorNoFP,
-    /** No such weather profile */
-    vatServerErrorNoWeather,
-    /** Invalid protocol revision */
-    vatServerErrorRevision,
-    /** Requested level too high */
-    vatServerErrorLevel,
-    /** No more clients */
-    vatServerErrorServFull,
-    /** CID/PID was suspended */
-    vatServerErrorCsSuspended,
-    /** Not valid control */
-    vatServerErrorInvalidCtrl,
-    /** Invalid position for rating */
-    vatServerErrorInvPos,
-    /** Not authorized software */
-    vatServerErrorUnAuth,
-    /** Wrong server type */
-    vatServerWrongType,
-    /** Unknown error */
-    vatErrorUnknown
+    vatServerErrorNone,             /**< No error */
+    vatServerErrorCsInUs,           /**< Callsign in use */
+    vatServerErrorCallsignInvalid,  /**< Callsign invalid */
+    vatServerErrorRegistered,       /**< Already registered */
+    vatServerErrorSyntax,           /**< Syntax error */
+    vatServerErrorSrcInvalid,       /**< Invalid source in packet */
+    vatServerErrorCidInvalid,       /**< Invalid CID/password */
+    vatServerErrorNoSuchCs,         /**< No such callsign */
+    vatServerErrorNoFP,             /**< No flightplan */
+    vatServerErrorNoWeather,        /**< No such weather profile */
+    vatServerErrorRevision,         /**< Invalid protocol revision */
+    vatServerErrorLevel,            /**< Requested level too high */
+    vatServerErrorServFull,         /**< No more clients */
+    vatServerErrorCsSuspended,      /**< CID/PID was suspended */
+    vatServerErrorInvalidCtrl,      /**< Not valid control */
+    vatServerErrorInvPos,           /**< Invalid position for rating */
+    vatServerErrorUnAuth,           /**< Not authorized software */
+    vatServerWrongType,             /**< Wrong server type */
+    vatErrorUnknown                 /**< Unknown error */
 }
 VatServerError;
 
-/** Client type */
+/** Client type
+*/
 typedef enum
 {
-    /** Unknown type */
-    vatUnknownClient = 0,
-    /** Pilot client type */
-    vatPilot = 1,
-    /** ATC client type */
-    vatAtc
+    vatUnknownClient,   /**< Unknown type */
+    vatPilot,           /**< Pilot client type */
+    vatAtc              /**< ATC client type */
 }
 VatClientType;
 
-/** Transponder modes */
+/** Transponder modes
+*/
 typedef enum
 {
-    /** Transponder is off, or in standby. */
-    vatTransponderModeStandby,
-    /** Transponder is on mode C, not identing. */
-    vatTransponderModeCharlie,
-    /** Transponder is on mode C and identing. */
-    vatTransponderModeIdent
+    vatTransponderModeStandby,  /**< Transponder is off, or in standby. */
+    vatTransponderModeCharlie,  /**< Transponder is on mode C, not identing. */
+    vatTransponderModeIdent     /**< Transponder is on mode C and identing. */
 }
 VatTransponderMode;
 
-/** ATC ratings */
+/** ATC ratings
+*/
 typedef enum
 {
-    /** Unknown */
-    vatAtcRatingUnknown = 0,
-    /** OBS */
-    vatAtcRatingObserver,
-    /** S1 */
-    vatAtcRatingStudent,
-    /** S2 */
-    vatAtcRatingStudent2,
-    /** S3 */
-    vatAtcRatingStudent3,
-    /** C1 */
-    vatAtcRatingController1,
-    /** C2 */
-    vatAtcRatingController2,
-    /** C3 */
-    vatAtcRatingController3,
-    /** I1 */
-    vatAtcRatingInstructor1,
-    /** I2 */
-    vatAtcRatingInstructor2,
-    /** I3 */
-    vatAtcRatingInstructor3,
-    /** SUP */
-    vatAtcRatingSupervisor,
-    /** ADM */
-    vatAtcRatingAdministrator
+    vatAtcRatingUnknown,        /**< Unknown */
+    vatAtcRatingObserver,       /**< OBS */
+    vatAtcRatingStudent,        /**< S1 */
+    vatAtcRatingStudent2,       /**< S2 */
+    vatAtcRatingStudent3,       /**< S3 */
+    vatAtcRatingController1,    /**< C1 */
+    vatAtcRatingController2,    /**< C2 */
+    vatAtcRatingController3,    /**< C3 */
+    vatAtcRatingInstructor1,    /**< I1 */
+    vatAtcRatingInstructor2,    /**< I2 */
+    vatAtcRatingInstructor3,    /**< I3 */
+    vatAtcRatingSupervisor,     /**< SUP */
+    vatAtcRatingAdministrator   /**< ADM */
 }
 VatAtcRating;
 
-/** Pilot ratings */
+/** Pilot ratings.
+*/
 typedef enum
 {
-    /** Unknown rating */
-    vatPilotRatingUnknown = 0,
-    /** P1 */
-    vatPilotRatingStudent,
-    /** P2 */
-    vatPilotRatingVFR,
-    /** P3 */
-    vatPilotRatingIFR,
-    /** Instructor */
-    vatPilotRatingInstructor,
-    /** SUP */
-    vatPilotRatingSupervisor
+    vatPilotRatingUnknown,      /**< Unknown rating */
+    vatPilotRatingStudent,      /**< P1 */
+    vatPilotRatingVFR,          /**< P2 */
+    vatPilotRatingIFR,          /**< P3 */
+    vatPilotRatingInstructor,   /**< Instructor */
+    vatPilotRatingSupervisor    /**< SUP */
 }
 VatPilotRating;
 
-/** ATC facility type */
+/** ATC facility type
+*/
 typedef enum
 {
-    /** Unknown facility type */
-    vatFacilityTypeUnknown = 0,
-    /** FSS */
-    vatFacilityTypeFSS,
-    /** Delivery */
-    vatFacilityTypeDEL,
-    /** Ground */
-    vatFacilityTypeGND,
-    /** Tower */
-    vatFacilityTypeTWR,
-    /** Approach */
-    vatFacilityTypeAPP,
-    /** Center */
-    vatFacilityTypeCTR
+    vatFacilityTypeUnknown, /**< Unknown facility type */
+    vatFacilityTypeFSS,     /**< FSS */
+    vatFacilityTypeDEL,     /**< Delivery */
+    vatFacilityTypeGND,     /**< Ground */
+    vatFacilityTypeTWR,     /**< Tower */
+    vatFacilityTypeAPP,     /**< Approach */
+    vatFacilityTypeCTR      /**< Center */
 }
 VatFacilityType;
 
-/** Flight simulator type */
+/** Flight simulator type
+*/
 typedef enum
 {
-    /** Unknown simulator type */
-    vatSimTypeUnknown = 0,
-    /** MS Flight Simulator 95 */
-    vatSimTypeMSFS95 = 1,
-    /** MS Flight Simulator 98 */
-    vatSimTypeMSFS98 = 2,
-    /** MSCFS (?) */
-    vatSimTypeMSCFS = 3,
-    /** X-Plane */
-    vatSimTypeXPLANE = 11,
-    /** AS2 */
-    vatSimTypeAS2 = 14,
-    /** PS1 */
-    vatSimTypePS1 = 15
+    vatSimTypeUnknown,  /**< Unknown simulator type */
+    vatSimTypeMSFS95,   /**< MS Flight Simulator 95 */
+    vatSimTypeMSFS98,   /**< MS Flight Simulator 98 */
+    vatSimTypeMSCFS,    /**< MSCFS (?) */
+    vatSimTypeXPLANE,   /**< X-Plane */
+    vatSimTypeAS2,      /**< AS2 */
+    vatSimTypePS1       /**< PS1 */
 }
 VatSimType;
 
-/** Flight rules */
+/** Flight rules
+*/
 typedef enum
 {
-    /**< IFR flight rules. */
-    vatFlightTypeIFR,
-    /**< Visual flight rules. */
-    vatFlightTypeVFR,
-    /**< Special visual flight rules */
-    vatFlightTypeSVFR,
-    /**< Defense visual Flight Rules */
-    vatFlightTypeDVFR
-} VatFlightType;
-
-/** Client query types */
-typedef enum
-{
-    /** Flight plan (pilots only, reply is a flight plan mesasge */
-    vatInfoQueryTypeFP = 0,
-    /**< Frequency (pilots only) */
-    vatInfoQueryTypeFreq = 1,
-    /**< User Info (must be supervisor) */
-    vatInfoQueryTypeInfo = 2,
-    /**< ATIS (controllers only, reply is a text message */
-    vatInfoQueryTypeAtis = 3,
-    /**< What server is this client on */
-    vatInfoQueryTypeServer = 4,
-    /**< Real name */
-    vatInfoQueryTypeName = 5,
-    /**< Is this client working ATC or just an observer (ATC only) */
-    vatInfoQueryTypeAtc = 6,
-    /**< What capabilities does this client have */
-    vatInfoQueryTypeCaps = 7,
-    /**< What IP address am I sending from? */
-    vatInfoQueryTypeIP = 8,
+    vatFlightTypeIFR,   /**< IFR flight rules. */
+    vatFlightTypeVFR,   /**< Visual flight rules. */
+    vatFlightTypeSVFR,  /**< Special visual flight rules */
+    vatFlightTypeDVFR   /**< Defense visual Flight Rules */
 }
-VatInfoQueryType;
+VatFlightType;
 
-/** Aircraft engine type */
+/** Client query types
+*/
 typedef enum
 {
-    /**< Piston */
-    vatEngineTypePiston = 0,
-    /**< Jet */
-    vatEngineTypeJet    = 1,
-    /**< None */
-    vatEngineTypeNone   = 2,
-    /**< Helo */
-    vatEngineTypeHelo   = 3
-} VatEngineType;
+    vatClientQueryFP,     /**< Flight plan (pilots only, reply is a flight plan mesasge */
+    vatClientQueryFreq,   /**< Frequency (pilots only) */
+    vatClientQueryInfo,   /**< User Info (must be supervisor) */
+    vatClientQueryAtis,   /**< ATIS (controllers only, reply is a text message */
+    vatClientQueryServer, /**< What server is this client on */
+    vatClientQueryName,   /**< Real name */
+    vatClientQueryAtc,    /**< Is this client working ATC or just an observer (ATC only) */
+    vatClientQueryCaps,   /**< What capabilities does this client have */
+    vatClientQueryIP,     /**< What IP address am I sending from? */
+}
+VatClientQueryType;
 
-/** Operations for a land line */
+/** Aircraft engine type
+*/
 typedef enum
 {
-    /**< Request landline with other client. */
-    vatLandlineCmdRequest = 0,
-    /**< Approve a request for a landline connection. */
-    vatLandlineCmdApprove,
-    /**< Reject a request for a landline. */
-    vatLandlineCmdReject,
-    /**< Terminate an in-progress landline. */
-    vatLandlineCmdEnd
-} VatLandlineCmd;
+    vatEngineTypePiston,    /**< Piston */
+    vatEngineTypeJet,       /**< Jet */
+    vatEngineTypeNone,      /**< None */
+    vatEngineTypeHelo       /**< Helo */
+}
+VatEngineType;
 
-/**  Types of landlines */
+/** Operations for a land line
+*/
 typedef enum
 {
-    /**< Intercom, a basic two-way telephone call. */
-    vatLandlineTypeIntercom = 0,
-    /**< Override.  Receiver doesn't have to key mic. */
-    vatLandlineTypeOverride,
-    /**< Monitor - one way send back to the initiator. */
-    vatLandlineTypeMonitor
-} VatLandlineType;
+    vatLandlineCmdRequest,  /**< Request landline with other client. */
+    vatLandlineCmdApprove,  /**< Approve a request for a landline connection. */
+    vatLandlineCmdReject,   /**< Reject a request for a landline. */
+    vatLandlineCmdEnd       /**< Terminate an in-progress landline. */
+}
+VatLandlineCmd;
 
-/**  Tracking commands */
+/** Types of landlines
+*/
 typedef enum
 {
-    /**< Start tracking */
-    vatTrackingCmdStartTrack = 0,
-    /**< Drop tracking */
-    vatTrackingCmdDropTrack,
-    /**< I'm tracking */
-    vatTrackingCmdIHave,
-    /**< Who is tracking */
-    vatTrackingCmdWhoHas,
-    /**< ??? */
-    vatTrackingCmdPointout,
-    /**< Departure list */
-    vatTrackingCmdDepartureList
-} VatTrackingCmd;
+    vatLandlineTypeIntercom,    /**< Intercom, a basic two-way telephone call. */
+    vatLandlineTypeOverride,    /**< Override. Receiver doesn't have to key mic. */
+    vatLandlineTypeMonitor      /**< Monitor - one way send back to the initiator. */
+}
+VatLandlineType;
 
-/** Pilot position structure */
+/** Tracking commands
+*/
+typedef enum
+{
+    vatTrackingCmdStartTrack,   /**< Start tracking */
+    vatTrackingCmdDropTrack,    /**< Drop tracking */
+    vatTrackingCmdIHave,        /**< I'm tracking */
+    vatTrackingCmdWhoHas,       /**< Who is tracking */
+    vatTrackingCmdPointout,     /**< Point out a target on the radar screen */
+    vatTrackingCmdDepartureList /**< Add target to departure list */
+}
+VatTrackingCmd;
+
+/** Pilot position structure
+*/
 typedef struct
 {
-    /** Latitude in decimal degrees */
+    /** Latitude in decimal degrees. Precision shall be minimum 5 fractional digits.
+    */
     double latitude;
-    /**< Longitude in decimal degrees */
+
+    /** Longitude in decimal degrees. Precision shall be minimum 5 fractional digits.
+    */
     double longitude;
-    /**< True altitude in feet above MSL */
+
+    /** True altitude in feet above MSL.
+    */
     int altitudeTrue;
-    /**< Pressure altitude in feet above MSL */
+
+    /** Pressure altitude in feet above MSL.
+    */
     int altitudePressure;
-    /**< Ground speed in knots */
+
+    /** Ground speed in knots.
+    */
     int groundSpeed;
-    /**< Heading in degrees, clockwise from true north, 0-359 */
+
+    /** Heading in degrees, clockwise from true north, 0-359.
+    */
     double heading;
-    /**< Bank in degrees, positive = roll right */
+
+    /** Bank in degrees, positive = roll right.
+    */
     double bank;
-    /**< Pitch in degrees, positive = pitch up */
+
+    /** Pitch in degrees, positive = pitch up.
+    */
     double pitch;
-    /**< 0-7777 */
+
+    /** Transponder code. Valid values are between 0000-7777
+    */
     int transponderCode;
-    /**< standby, charlie or ident */
+
+    /** Current transponder mode. Either standby, charlie or ident.
+    */
     VatTransponderMode transponderMode;
-    /**< rating */
+
+    /** Pilot rating. This is not yet used in VATSIM. So VATSIM expects every pilot
+     client to send vatPilotRatingStudent only.
+    */
     VatPilotRating rating;
 }
 VatPilotPosition;
 
-
-/** ATC position structure */
+/** Interim pilot position structure
+*/
 typedef struct
 {
-    /**< ATC frequency in khz. */
-    int frequency;
-    /**< Facility type */
-    VatFacilityType facility;
-    /**< Visible range in nm */
-    int visibleRange;
-    /**< Rating */
-    VatAtcRating rating;
-    /**< Latitude in decimal degrees. */
+    /** Latitude in decimal degrees. Precision shall be minimum 5 fractional digits.
+    */
     double latitude;
-    /**< Longitude in decimal degrees. */
+
+    /** Longitude in decimal degrees. Precision shall be minimum 5 fractional digits.
+    */
     double longitude;
-    /**< Elevation AGL in feet (not used.) */
-    int elevation;
-} VatAtcPosition;
+
+    /** True altitude in feet above MSL.
+    */
+    int altitudeTrue;
+
+    /** Heading in degrees, clockwise from true north, 0-359.
+    */
+    double heading;
+
+    /** Bank in degrees, positive = roll right.
+    */
+    double bank;
+
+    /** Pitch in degrees, positive = pitch up.
+    */
+    double pitch;
+}
+VatInterimPilotPosition;
 
 
-/** Pilot Connection information */
+/** ATC position structure
+*/
 typedef struct
 {
-    /** Pilots callsign */
+    /** ATC frequency in khz.
+    */
+    int frequency;
+
+    /** Facility type
+    */
+    VatFacilityType facility;
+
+    /** Visible range in nm
+    */
+    int visibleRange;
+
+    /** ATC rating
+    */
+    VatAtcRating rating;
+
+    /** Latitude in decimal degrees. Precision shall be minimum 5 fractional digits.
+    */
+    double latitude;
+
+    /** Longitude in decimal degrees. Precision shall be minimum 5 fractional digits.
+    */
+    double longitude;
+
+    /**< Elevation AGL in feet. */
+    int elevation;
+}
+VatAtcPosition;
+
+
+/** Pilot Connection information
+*/
+typedef struct
+{
+    /** Pilots callsign.
+    */
     const char *callsign;
-    /** Pilots real name */
+
+    /** Pilots real name.
+    */
     const char *name;
-    /** Simulator type */
+
+    /** Simulator type.
+    */
     VatSimType simType;
-    /** Pilot rating */
+
+    /** Pilot rating. This is not yet used in VATSIM. So VATSIM expects every pilot
+     client to send vatPilotRatingStudent only. This must also be consistent with what is
+     sent in @see VatPilotPosition.
+    */
     VatPilotRating rating;
 }
 VatPilotConnection;
 
-/** ATC Connection information  */
+/** ATC Connection information
+*/
 typedef struct
 {
-    /** Controllers callsign */
+    /** Controllers callsign
+    */
     const char *callsign;
-    /** Controllers real name */
+
+    /** Controllers real name
+    */
     const char *name;
-    /** Controller rating */
+
+    /** Controller rating. This must also be consistent with what is
+     sent in @see VatAtcPosition.
+    */
     VatAtcRating rating;
 }
 VatAtcConnection;
 
-/** A single temperature layer */
+/** A single temperature layer
+*/
 typedef struct
 {
-    /** Top of temperature layer in feet MSL */
-    int ceiling;
-    /** Temperature in degrees celsius */
-    int temp;
-} VatTempLayer;
+    int ceiling;    /**< Top of temperature layer in feet MSL */
+    int temp;       /**< Temperature in degrees celsius */
+}
+VatTempLayer;
 
-/** A single wind layer */
+/** A single wind layer
+*/
 typedef struct
 {
-    /** in ft MSL */
-    int ceiling;
-    /** in ft MSL */
-    int floor;
-    /** In degrees clockwise from true north */
-    int direction;
-    /** Wind speed in knots. */
-    int speed;
-    /** 1 = true, 0 = false */
-    int gusting;
-    /** 0 - 255, 0 = none, 255 = extreme */
-    int turbulence;
+    int ceiling;    /**< Wind ceiling in ft MSL. */
+    int floor;      /**< Wind floor in ft MSL. */
+    int direction;  /**< Wind direction in degrees clockwise from true north. */
+    int speed;      /**< Wind speed in knots. */
+    int gusting;    /**< 1 = true, 0 = false. */
+    int turbulence; /**< 0 - 255, 0 = none, 255 = extreme. */
 }
 VatWindLayer;
 
-/** A single cloud layer. */
+/** A single cloud layer.
+*/
 typedef struct
 {
-    /** Ft. MSL */
-    int ceiling;
-    /** Ft. MSL */
-    int floor;
-    /** 0 - 8 octets, 0 = clear, 8 = overcast. */
-    int coverage;
-    /** 1 = true, 0 = false */
-    int icing;
-    /** 0 - 255 */
-    int turbulence;
+    int ceiling;    /**< Cloud ceiling in ft MSL */
+    int floor;      /**< Cloud floor in ft MSL. */
+    int coverage;   /**< Cloud coverage. 0 - 8 octets, 0 = clear, 8 = overcast. */
+    int icing;      /**< Icing 1 = true, 0 = false. */
+    int turbulence; /**< Turbulence 0 - 255, 0 = none, 255 = extreme. */
 }
 VatCloudLayer;
 
-/** A thunderstorm layer. NOTE: unclear why this is different from a regular cloud layer! */
+/** A thunderstorm layer.
+*/
 typedef struct
 {
-    /** In ft. */
-    int ceiling;
-    /** In ft. */
-    int floor;
-    /** 0 - 8 octets */
-    int coverage;
-    /** ?? */
-    int deviation;
-    /** 0 - 255 */
-    int turbulence;
+    int ceiling;    /**< Thunderstorm ceiling in ft MSL */
+    int floor;      /**< Thunderstorm floor in ft MSL. */
+    int coverage;   /**< Thunderstorm coverage. 0 - 8 octets, 0 = clear, 8 = overcast. */
+    int deviation;  /**< Icing 1 = true, 0 = false. */
+    int turbulence; /**< Turbulence 0 - 255, 0 = none, 255 = extreme. */
 }
 VatThunderStormLayer;
 
 
-/**
- * \brief A flight plan structure
- * \note Pass empty strings for empty input, never null.
- */
+/** A flight plan structure sent or received from the server.
+ @note All pointers must be valid and cannot be NULL. Pass empty strings for empty input.
+*/
 typedef struct
 {
-    VatFlightType flightType;
-    /** Aircraft ICAO type e.g. T/B734/F */
-    const char *aircraftType;
-    /** Cruising speed in knkots */
-    int trueCruisingSpeed;
-    /** ICAO code of departure airport */
-    const char *departAirport;
-    /** Departure time in UTC, e.g. 2030 = 8:30 pm GMT */
-    int departTime;
-    /** Actual departure time in UTC, e.g. 2030 = 8:30 pm GMT */
-    int departTimeActual;
-    /** Planned cruising altitude. FL230 or 15000 */
-    const char *cruiseAltitude;
-    /** ICAO code of destination airport */
-    const char *destAirport;
-    /** Enroute time - hours */
-    int enrouteHrs;
-    /** Enroute time - minutes */
-    int enrouteMins;
-    /** Available fuel - hours */
-    int fuelHrs;
-    /** Available fuel - minutes */
-    int fuelMins;
-    /** ICAO code of alternate airport */
-    const char *alternateAirport;
-    /** Flight plan remarks */
-    const char *remarks;
-    /** Flight route in capital letters. Separate with dots. */
-    const char *route;
+    VatFlightType flightType;       /**< Flight type, IFR, VFR, etc. */
+    const char *aircraftType;       /**< Aircraft ICAO type e.g. T/B734/F */
+    int trueCruisingSpeed;          /**< True cruising speed in knkots */
+    const char *departAirport;      /**< ICAO code of departure airport */
+    int departTime;                 /**< Departure time in UTC, e.g. 2030 = 8:30 pm GMT */
+    int departTimeActual;           /**< Actual departure time in UTC, e.g. 2030 = 8:30 pm GMT */
+    const char *cruiseAltitude;     /**< Planned cruising altitude. FL230 or 15000 */
+    const char *destAirport;        /**< ICAO code of destination airport */
+    int enrouteHrs;                 /**< Enroute time - hours */
+    int enrouteMins;                /**< Enroute time - minutes */
+    int fuelHrs;                    /**< Available fuel - hours */
+    int fuelMins;                   /**< Available fuel - minutes */
+    const char *alternateAirport;   /**< ICAO code of alternate airport */
+    const char *remarks;            /**< Flight plan remarks */
+    const char *route;              /**< Flight route in capital letters. Separate with dots. */
 }
 VatFlightPlan;
 
-/** Controller Atis structure */
+/** Controller Atis structure
+ @note All pointers must be valid and cannot be NULL. Pass empty strings for empty input.
+*/
 typedef struct
 {
-    /** Controller voice room in the form <url>/room */
-    const char *voiceRoom;
-    /** Controller messages lines. Maximum 4 */
-    const char **textLines;
-    /** Number of message lines */
-    int textLineCount;
-    /** Controllers planned logoff time, e.g 20:00 UTC */
-    const char *zuluLogoff;
-} VatControllerAtis;
+    const char *voiceRoom;  /**< Controller voice room in the form <url>/room */
+    const char **textLines; /**< Controller messages lines. Maximum 4 */
+    int textLineCount;      /**< Number of message lines */
+    const char *zuluLogoff; /**< Controllers planned logoff time, e.g 20:00 UTC */
+}
+VatControllerAtis;
 
-/** Aircraft information structure */
+/** Aircraft information structure
+ @note All pointers must be valid and cannot be NULL. Pass empty strings for empty input.
+*/
 typedef struct
 {
-    /** Aircraft ICAO identifier */
-    const char *aircraftType;
-    /** Airline callsign */
-    const char *airline;
-    /** Livery identifier */
-    const char *livery;
-} VatAircraftInfo;
+
+    const char *aircraftType;   /**< Aircraft ICAO identifier. */
+    const char *airline;        /**< Airline callsign. */
+    const char *livery;         /**< Livery identifier. */
+}
+VatAircraftInfo;
 
 /**
- *  \defgroup callback_functions Callback function typedefs
- *  \brief Typedefs defined in vatlib.h for callback or handler functions passed as function parameters.
- *
- *  Vatlib uses installed callback functions as parameters for some function calls,
- *  e.g. to set up notification handlers.
- *
- *  The typedefs defined in this group describe the function parameters used to set
- *  up or clear the callback functions and should also be referenced to define the
- *  callback function to handle such events in the user's code.
- *  \{
- */
+ Vatlib uses installed callback functions as parameters for some function calls,
+ e.g. to set up notification handlers. The typedefs defined in this group describe the function parameters used to set
+ up or clear the callback functions and should also be referenced to define the
+ callback function to handle such events in the user's code.
 
-/**
- * \brief Connection change callback
- * \param session Session handler
- * \param oldStatus Old connection status
- * \param newStatus New connection status
- * \param ref User defined data
- */
+ Each callback function has always two mandatory parameters. VatSessionID is the pointer to the session
+ which called the callback. This can be used to identify the session object.
+ The second mandatory parameter ref lets you any user defined data. As in C++ all callbacks have to be static
+ functions, user defined data is typically set to the C++ object pointer. This allows you to forward the call
+ from the static method to the listening C++ class.
+
+@defgroup callback_functions Callback function typedefs
+ \{
+*/
+
+/***************************************************************************
+    Callbacks for all clients
+ ***************************************************************************/
+
+
+/***************************************************************************
+    Callbacks for pilot clients
+ ***************************************************************************/
+
+
+
+/***************************************************************************
+    Callbacks for ATC clients
+ ***************************************************************************/
+
+/** State change callback.
+ @param session Session handler
+ @param oldStatus Old connection status
+ @param newStatus New connection status
+ @param ref User defined data
+*/
 typedef void (* VatStateChangeHandler_f)(
     VatSessionID session,
     VatConnectionStatus oldStatus,
@@ -634,12 +638,13 @@ typedef void (* VatStateChangeHandler_f)(
     void *ref);
 
 /**
- * \brief Private message callback
- * \param session Session handler
- * \param from Sender callsign
- * \param to Receiver callsign
- * \param ref User defined data
- */
+ Functions of type VatTextMessageHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when a private text message has been received.
+ @param session Session pointer
+ @param sender Callsign of the message sender
+ @param receiver Callsign of the message receiver
+ @param ref User defined data
+*/
 typedef void (* VatTextMessageHandler_f)(
     VatSessionID session,
     const char *sender,
@@ -647,8 +652,19 @@ typedef void (* VatTextMessageHandler_f)(
     const char *message,
     void *ref);
 
-/** Function signature when a radio transmission has been received. An array of frequencies in khz
-    is passed in. */
+/**
+ Functions of type VatRadioMessageHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when a radio text message has been received. Vatlib does not
+ know which frequency the user is listening to therefore this callback is called for every
+ radio message. It is the responsibility of the client to filter relevant messages.
+ Each radio message can be transmitted on more then one frequency.
+ @param session Session pointer
+ @param sender Callsign of the message sender
+ @param freqCount The number of frequencies on which the text message was transmitted
+ @param freqList Array of frequencies on which the text message was transmitted
+ @param receiver Callsign of the message receiver
+ @param ref User defined data
+*/
 typedef void (* VatRadioMessageHandler_f)(
     VatSessionID session,
     const char *sender,
@@ -657,23 +673,38 @@ typedef void (* VatRadioMessageHandler_f)(
     const char *message,
     void *ref);
 
-/** Function signature when a pilot has left the network. */
+/**
+ Functions of type VatDeletePilotHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when a pilot has left the network.
+ @param session Session pointer.
+ @param sender Callsign of the pilot leaving the network.
+ @param ref User defined data.
+*/
 typedef void (* VatDeletePilotHandler_f)(
     VatSessionID session,
     const char *sender,
     void *ref);
 
 /**
-    Function signature when a controller has left the network.
- */
+ Functions of type VatDeleteAtcHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when an ATC station has left the network.
+ @param session Session pointer.
+ @param sender Callsign of the ATC station leaving the network.
+ @param ref User defined data.
+*/
 typedef void (* VatDeleteAtcHandler_f)(
     VatSessionID session,
     const char *sender,
     void *ref);
 
 /**
-    Function signature when a pilot's position has been reported.
- */
+ Functions of type VatPilotPositionHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when a pilot's position has been reported.
+ @param session Session pointer.
+ @param sender Callsign of the pilot reporting its position.
+ @param position Pilot position struct
+ @param ref User defined data.
+*/
 typedef void (* VatPilotPositionHandler_f)(
     VatSessionID session,
     const char *sender,
@@ -681,7 +712,27 @@ typedef void (* VatPilotPositionHandler_f)(
     void *ref);
 
 /**
-    Function signature when a controller's position has been reported.
+ Functions of type VatPilotPositionHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when a pilot's position has been reported.
+ @param session Session pointer.
+ @param sender Callsign of the pilot reporting its position.
+ @param position Interim pilot position struct
+ @param ref User defined data.
+ @see VatInterimPilotPosition
+*/
+typedef void (* VatInterimPilotPositionHandler_f)(
+    VatSessionID session,
+    const char *sender,
+    const VatInterimPilotPosition *position,
+    void *ref);
+
+/**
+ Functions of type VatAtcPositionHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when an ATC position has been reported.
+ @param session Session pointer.
+ @param sender Callsign of the ATC station reporting its position.
+ @param position ATC position struct
+ @param ref User defined data.
 */
 typedef void (* VatAtcPositionHandler_f)(
     VatSessionID session,
@@ -690,7 +741,13 @@ typedef void (* VatAtcPositionHandler_f)(
     void *ref);
 
 /**
-    Function signature when you are being killed from the network.
+ Functions of type VatKillHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback to inform you have been kicked from the network. There
+ is no further action requred. Both - vatlib and server - will close the connection
+ immediatly.
+ @param session Session pointer.
+ @param reason Message from the supervisor, why you have been kicked. This can also be empty.
+ @param ref User defined data.
 */
 typedef void (* VatKillHandler_f)(
     VatSessionID session,
@@ -698,8 +755,11 @@ typedef void (* VatKillHandler_f)(
     void *ref);
 
 /**
-    Function signature when your ping has been answered with a pong.
-    \param elapsedTime Elapsed time, after ping had been sent in milliseconds.
+ Functions of type VatPongHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when your ping has been answered with a pong.
+ @param session Session pointer.
+ @param elapsedTime Elapsed time, after ping had been sent in milliseconds.
+ @param ref User defined data.
 */
 typedef void (* VatPongHandler_f)(
     VatSessionID session,
@@ -708,7 +768,11 @@ typedef void (* VatPongHandler_f)(
     void *ref);
 
 /**
-    Function signature for incoming flight plan.
+ Functions of type VatPongHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when your ping has been answered with a pong.
+ @param session Session pointer.
+ @param elapsedTime Elapsed time, after ping had been sent in milliseconds.
+ @param ref User defined data.
 */
 typedef void (* VatFlightPlanHandler_f)(
     VatSessionID session,
@@ -717,7 +781,13 @@ typedef void (* VatFlightPlanHandler_f)(
     void *ref);
 
 /**
-    Function signature for a handoff request from another ATC to you.
+ Functions of type VatHandoffRequestHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when another ATC client is requesting to handoff a target
+ to you. You can either accept the handover or reject it.
+ @param session Session pointer.
+ @param target Targets callsign
+ @param ref User defined data.
+ @see Vat_AcceptHandoff, Vat_CancelHandoff
 */
 typedef void (* VatHandoffRequestHandler_f)(
     VatSessionID session,
@@ -726,7 +796,12 @@ typedef void (* VatHandoffRequestHandler_f)(
     void *ref);
 
 /**
-    Function signature when another ATC has accepted a handoff.
+ Functions of type VatHandoffAcceptedHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when another ATC client has accepted the handoff of target
+ from you.
+ @param session Session pointer.
+ @param target Targets callsign
+ @param ref User defined data.
 */
 typedef void (* VatHandoffAcceptedHandler_f)(
     VatSessionID session,
@@ -735,95 +810,144 @@ typedef void (* VatHandoffAcceptedHandler_f)(
     void *ref);
 
 /**
-    Function signature when a the other ATC is canceling or refusing the hanodff.
+ Functions of type VatHandoffCancelledHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when another ATC client has cancelled the handoff of target
+ from you. You are still tracking it.
+ @param session Session pointer.
+ @param target Targets callsign
+ @param ref User defined data.
 */
-typedef void (* VatHandoffCancelHandler_f)(
+typedef void (* VatHandoffCancelledHandler_f)(
     VatSessionID session,
     const char *sender,
     const char *target,
     void *ref);
 
 /**
-    Function signature for an incoming metar in text format.
-    OPEN ISSUE: shouldn't this be labeled as ACARS METAR?
+ Functions of type VatMetarRequestHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when metar is requested from you for a ICAO station.
+ This is never going to happen with VATSIM servers, since you always request METAR
+ from the servers and not the other way round. But just in case someone needs it.
+ @param session Session pointer.
+ @param station Targets callsign
+ @param ref User defined data.
+ @see Vat_RequestMetar
 */
-typedef void (* VatACARSDataHandler_f)(
-    VatSessionID session,
-    const char *data,
-    void *ref);
-
-/**
-    Function signature when someone is requesting ACARS data of you.
-    OPEN ISSUE: isn't this server only?!?
-*/
-typedef void (* VatACARSRequestHandler_f)(
-    VatSessionID session,
-    const char *sender,
-    const char *data,
-    void *ref);
-
 typedef void (* VatMetarRequestHandler_f)(
     VatSessionID session,
     const char *sender,
     const char *station,
     void *ref);
 
+/**
+ Functions of type VatMetarResponseHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when metar data has been received from the server as previously
+ requested. It does not tell you which ICAO station the metar belongs to, so you better don't
+ send several requests in parallel, but better wait until one request is answered.
+ @param session Session pointer.
+ @param metar METAR string
+ @param ref User defined data.
+ @see Vat_RequestMetar
+*/
 typedef void (* VatMetarResponseHandler_f)(
     VatSessionID session,
     const char *metar,
     void *ref);
 
-/** Function signature when someone is requesting info from you. This will only be:
-    real name, frequency, ATIS. Info and server are provided automatically by the
-    library.
- */
-typedef void (* VatInfoRequestHandler_f)(
+/**
+ Functions of type VatClientQueryHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when another client is requesting some information from you.
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param type Type of information the remote client is asking for.
+ @param ref User defined data.
+*/
+typedef void (* VatClientQueryHandler_f)(
     VatSessionID session,
     const char *sender,
-    VatInfoQueryType type,
+    VatClientQueryType type,
     const char *data,
     void *ref);
 
-/** Function signature when an info reponse is received.
-    For most info responses, only data is passed back, but
-    for an ATC query about another ATC, data2 is also used.
- */
-typedef void (* VatInfoResponseHandler_f)(
+/**
+ Functions of type VatClientQueryResponseHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when the info request has been answered by another client to you.
+ Function signature when an info reponse is received. For most info responses, only data is passed
+ back, but for an ATC query about another ATC, data2 is also used.
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param type Type of information the remote client is asking for.
+ @param data Reponse data. The content depends heavily on the request type.
+ @param data2 Some responses use a second data field.
+ @todo Complete the descriptions for the different sub types
+ @param ref User defined data.
+*/
+typedef void (* VatClientQueryResponseHandler_f)(
     VatSessionID session,
     const char *sender,
-    VatInfoQueryType type,
+    VatClientQueryType type,
     const char *data,
     const char *data2,
     void *ref);
 
-/** Function signature when a CAPS reply has been received.
-    It will contain a reply for each Capability it knows
-    about as well as whether or not it supports it. This will come
-    all in one packet.
-    \see VatCapabilities
- */
+/**
+ Functions of type VatInfoCAPSReplyHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when another client has sent his client capabilities.
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param capabilityFlags A flag containing each supported capability.
+ @param ref User defined data.
+ @see VatCapabilities
+*/
 typedef void (* VatInfoCAPSReplyHandler_f)(
     VatSessionID session,
     const char *sender,
     int capabilityFlags,
     void *ref);
 
-/** A controller voiceroom has been received. */
+/**
+ Functions of type VatVoiceRoomHandler_f are implemented by vatlib clients.
+ Vatlib calls this callback when an ATC client has sent his voice room.
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param voiceRoom Voiceroom string in the form of "<host>/room", e.g. "voice.somewhere.com/zzzz_twr".
+ @param ref User defined data.
+*/
 typedef void (* VatVoiceRoomHandler_f)(
     VatSessionID session,
     const char *sender,
     const char *voiceRoom,
     void *ref);
 
-/** A controller ATIS has been received. */
+/**
+ Functions of type VatControllerAtisHandler_f are implemented by vatlib ATC clients.
+ Vatlib calls this callback when an ATC client has sent the controller ATIS. Be aware this
+ is not the ATIS of an airport, but some detailed information about the controller itself
+ (e.g. until when he is going to be online, voiceroom) and some information he wants to pass
+ onto pilots (e.g. links to charts or initial calls advices).
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param atis The ATC controllers atis.
+ @param ref User defined data.
+ @see VatControllerAtis
+*/
 typedef void (* VatControllerAtisHandler_f)(
     VatSessionID session,
     const char *sender,
     const VatControllerAtis *atis,
     void *ref);
 
-/** Function signature for network errors
- */
+/**
+ Functions of type VatServerErrorHandler_f are implemented by all vatlib clients.
+ Vatlib calls this callback when the server reported an error. This can be due to
+ wrong login details, a malformed packet etc.
+ @param session Session pointer.
+ @param errorCode Exact code identifying the error.
+ @param parameter String identifying the exact parameter which caused the error.
+ @param description Some additional and helpful description what went wrong.
+ @param ref User defined data.
+ @see VatServerError
+*/
 typedef void (* VatServerErrorHandler_f)(
     VatSessionID session,
     VatServerError errorCode,
@@ -831,35 +955,76 @@ typedef void (* VatServerErrorHandler_f)(
     const char *description,
     void *ref);
 
-/** Function signature for an incoming temperature and pressure data.
-    The barometric pressure is in the form 2992 (e.g. hundredths of inches.)
- */
+/**
+ Functions of type VatTemperatureDataHandler_f are implemented by vatlib pilot clients.
+ Vatlib calls this callback when temperature layers for an ICAO station have been received
+ as previously requested. Be aware that this callback does not say which ICAO station the
+ data belongs to. So you better do not run multiple requests in parallel.
+ @param session Session pointer.
+ @param tempLayers Array of 4 temperature layers
+ @param pressure The barometric pressure in the form 2992.
+ @param ref User defined data.
+ @see VatTempLayer
+*/
 typedef void (* VatTemperatureDataHandler_f)(
     VatSessionID session,
-    const VatTempLayer layer[4],
+    const VatTempLayer tempLayers[4],
     int pressure,
     void *ref);
 
-/** Function signature for incoming wind data.
- */
+/**
+ Functions of type VatWindDataHandler_f are implemented by vatlib pilot clients.
+ Vatlib calls this callback when wind layers for an ICAO station have been received
+ as previously requested. Be aware that this callback does not say which ICAO station the
+ data belongs to. So you better do not run multiple requests for different stations in parallel.
+ @param session Session pointer.
+ @param windLayers Array of 4 wind layers
+ @param pressure The barometric pressure in the form 2992.
+ @param ref User defined data.
+ @see VatWindLayer
+*/
 typedef void (* VatWindDataHandler_f)(
     VatSessionID session,
-    const VatWindLayer layer[4],
+    const VatWindLayer windLayers[4],
     void *ref);
 
-/** Function signature for incoming cloud and thunderstorm data.
-    Visibility is in statute miles.
- */
+/**
+ Functions of type VatCloudDataHandler_f are implemented by vatlib pilot clients.
+ Vatlib calls this callback when cloud layers for an ICAO station have been received
+ as previously requested. Be aware that this callback does not say which ICAO station the
+ data belongs to. So you better do not run multiple requests for different stations in parallel.
+ @param session Session pointer.
+ @param cloudLayers Array of 2 cloud layers
+ @param thunderStormLayer One extra layer in case of thunderstorms. If no thunderstorm is around,
+ this layer will have invalid values.
+
+ @param visibility Visibility in statute miles.
+ @param ref User defined data.
+ @see VatCloudLayer, VatThunderStormLayer
+*/
 typedef void (* VatCloudDataHandler_f)(
     VatSessionID session,
-    const VatCloudLayer cloudLayer[2],
+    const VatCloudLayer cloudLayers[2],
     VatThunderStormLayer thunderStormLayer,
     float visibility,
     void *ref);
 
 /**
- * Function signature for incoming aircraft config packets.
- */
+ Functions of type VatAircraftConfigHandler_f are implemented by vatlib pilot clients.
+ Vatlib calls this callback when aircraft configuration has been received from another pilot
+ client. Aircraft configuration is a JSON encoded object and does contain among other things:
+ @li aircraft lights (on/off)
+ @li aircraft engines (on/off)
+ @li gear down/up
+ @li aircraft on ground (true/false)
+ @li flaps between 0 - 100 %.
+ @li ...
+
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param aircraftConfig JSON encoded aircraft config object.
+ @param ref User defined data.
+*/
 typedef void (* VatAircraftConfigHandler_f)(
     VatSessionID session,
     const char *sender,
@@ -867,30 +1032,39 @@ typedef void (* VatAircraftConfigHandler_f)(
     void *ref);
 
 /**
-    Function signature for some kind of incoming misc.
-    ATC message ("ProController" packet.)
-    OPEN ISSUE: should we have generic handlers for unknown variants?
- */
-typedef void (* VatATCClientComHandler_f)(
-    VatSessionID session,
-    const char *sender,
-    const char *data,
-    void *ref);
-
-/**
-    Function signature for some kind of incoming misc.
-    pilot message ("SquawkBox" packet.)
- */
-typedef void (* VatPilotClientComHandler_f)(
+ Functions of type VatCustomAtcPacketHandler_f are implemented by vatlib ATC clients.
+ Vatlib calls this callback when a custom ATC client communication packet
+ has been received, which was unknown to vatlib. It therefore forwards the packet type
+ plus all tokens to the client. This allows clients to implement custom packages and
+ handle them themselves.
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param subType String identifying the type of custom packet.
+ @param data Array of const char pointers. Each pointer points to a packet token string.
+ @param dataSize The size of the const char* array.
+ @param ref User defined data.
+*/
+typedef void (* VatCustomAtcPacketHandler_f)(
     VatSessionID session,
     const char *sender,
     const char *subType,
+    const char **data,
+    int dataSize,
     void *ref);
 
 /**
-    Function signature for some kind of incoming misc.
-    pilot message ("SquawkBox" packet.)
- */
+ Functions of type VatCustomPilotPacketHandler_f are implemented by pilot clients.
+ Vatlib calls this callback when a custom pilot client communication packet
+ has been received, which was unknown to vatlib. It therefore forwards the packet type
+ plus all tokens to the client. This allows clients to implement custom packages and
+ handle them themselves.
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param subType String identifying the type of custom packet.
+ @param data Array of const char pointers. Each pointer points to a packet token string.
+ @param dataSize The size of the const char* array.
+ @param ref User defined data.
+*/
 typedef void (* VatCustomPilotPacketHandler_f)(
     VatSessionID session,
     const char *sender,
@@ -900,26 +1074,51 @@ typedef void (* VatCustomPilotPacketHandler_f)(
     void *ref);
 
 /**
-    Function signature when another client is requesting info
-    about our info as a pilot (e.g. what kind of plane are we?
- */
+ Functions of type VatAircraftInfoRequestHandler_f are implemented by pilot clients.
+ Vatlib calls this callback when a aircraft info request is received. A aircraft
+ info request needs to be responded by sending the modern plane info.
+ @param session Session pointer.
+ @param sender Callsign of the sending client
+ @param ref User defined data.
+ @see Vat_SendModernPlaneInfo
+*/
 typedef void (* VatAircraftInfoRequestHandler_f)(
     VatSessionID session,
     const char *sender,
     void *ref);
 
 /**
-    Function signature when a pilot is telling us what kind of plane they are.
- */
-typedef void (* VatAircraftInfoHandler_f)(
+ Functions of type VatAircraftInfoResponseHandler_f are implemented by pilot clients.
+ Vatlib calls this callback when a aircraft info response is received. A aircraft
+ info reponse is the answer to an aircraft info request. It provides you in the best case
+ information about the other clients aircraft type, airline and livery. Other clients
+ might have disabled to send this information, so it could be that you receive only
+ some.
+ This is the modern version. Older clients used to send a different packet as reponse.
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param aircraftInfo Aircraft info struct.
+ @param ref User defined data.
+ @see VatAircraftInfo, VatLegacyAircraftInfoHandler_f
+*/
+typedef void (* VatAircraftInfoResponseHandler_f)(
     VatSessionID session,
     const char *sender,
     const VatAircraftInfo *aircraftInfo,
     void *ref);
 
 /**
-    Function signature when a pilot is telling us what kind of plane they are.
- */
+ Functions of type VatLegacyAircraftInfoHandler_f are implemented by pilot clients.
+ Vatlib calls this callback when a aircraft info response is received. A aircraft
+ info reponse is the answer to an aircraft info request. It provides you information
+ about the engine type and the used CSL model.
+ This is the legacy version of the reponse. Modern clients use to send a different packet as reponse.
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param aircraftInfo Aircraft info struct.
+ @param ref User defined data.
+ @see VatAircraftInfoResponseHandler_f
+*/
 typedef void (* VatLegacyAircraftInfoHandler_f)(
     VatSessionID session,
     const char *sender,
@@ -928,10 +1127,16 @@ typedef void (* VatLegacyAircraftInfoHandler_f)(
     void *ref);
 
 /**
-    Function signature when someone is attempting to write an FSUIPC command to us.
-    (Most sims can't support this.)
- */
-typedef void (* VatHandleIPCHandler_f)(
+ Functions of type VatIPCHandler_f are implemented by ??? clients.
+ @todo complete the description
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param ipcCommand
+ @param ipcSlot
+ @param ipcValue
+ @param ref User defined data.
+*/
+typedef void (* VatIPCHandler_f)(
     VatSessionID session,
     const char *sender,
     const char *ipcCommand,
@@ -939,6 +1144,17 @@ typedef void (* VatHandleIPCHandler_f)(
     int ipcValue,
     void *ref);
 
+/**
+ Functions of type VatTargetsScratchpadHandler_f are implemented by ATC clients.
+ Vatlib calls this callback when the targets scratchpad has been changed by another ATC client.
+ Use this callback to update your local scratchpad.
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param target Callsign of the target.
+ @param scratchpad New content of the scratchpad
+ @param ref User defined data.
+ @see VatAircraftInfoResponseHandler_f
+*/
 typedef void (* VatTargetsScratchpadHandler_f)(
     VatSessionID session,
     const char *sender,
@@ -947,10 +1163,17 @@ typedef void (* VatTargetsScratchpadHandler_f)(
     void *ref);
 
 /**
-    Function signature when some kind of land line command is being sent
-    from another client.
- */
-typedef void (* VatHandleLandlineCommandHandler_f)(
+ Functions of type VatHandleLandlineCommandHandler_f are implemented by ??? clients.
+ @todo complete the description
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param command
+ @param type
+ @param ip
+ @param port
+ @param ref User defined data.
+*/
+typedef void (* VatLandlineCommandHandler_f)(
     VatSessionID session,
     const char *sender,
     VatLandlineCmd command,
@@ -960,18 +1183,15 @@ typedef void (* VatHandleLandlineCommandHandler_f)(
     void *ref);
 
 /**
-    Function signature for a tracking command from another ATC.
- */
-typedef void (* VatHandleTrackingCommandHandler_f)(
-    VatSessionID session,
-    const char *sender,
-    const char *target,
-    VatTrackingCmd command,
-    void *ref);
-
-/**
-    Function signature when a controller wants a break.
- */
+ Functions of type VatControllerBreakCommandHandler_f are implemented by ATC clients.
+ Vatlib calls this callback when an ATC controller requested a break or stopped the break.
+ If break mode is active, the ATC client shall display the ATC controller different
+ and no handover shall be initiated.
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param wantsBreak True if the controller requested a break and false if the break is over
+ @param ref User defined data.
+*/
 typedef void (* VatControllerBreakCommandHandler_f)(
     VatSessionID session,
     const char *sender,
@@ -981,7 +1201,7 @@ typedef void (* VatControllerBreakCommandHandler_f)(
 /**
     Function signature when a nex-gen client is ID'ing us
  */
-typedef void (* VatHandleSharedStateIDHandler_f)(
+typedef void (* VatSharedStateIDHandler_f)(
     VatSessionID session,
     const char *sender,
     void *ref);
@@ -989,26 +1209,94 @@ typedef void (* VatHandleSharedStateIDHandler_f)(
 /**
     Function signature when a nex-gen client is replying to our ID
  */
-typedef void (* VatHandleSharedStateDIHandler_f)(
+typedef void (* VatSharedStateDIHandler_f)(
     VatSessionID session,
     const char *sender,
     void *ref);
+
 /**
-    Function signature when a flight strip is being pushed to us.
-    New way which supports strip type and annotations - added by RAC 02/28/2007.
- */
-typedef void (* VatHandlePushStripCommandHandler_f)(
+ Functions of type VatPushToDepartureListHandler_f are implemented by ATC clients.
+ Vatlib calls this callback when an ATC controller wants to push a target into our
+ depature list. The receiving client shall add the target into the departure list,
+ if it is not already there.
+ @todo Callback Setter and send method
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param target Callsign of the target.
+ @param ref User defined data.
+*/
+typedef void (* VatPushToDepartureListHandler_f)(
     VatSessionID session,
     const char *sender,
-    const char *aCCallsign,
+    const char *target,
+    void *ref);
+
+/**
+ Functions of type VatPointOutHandler_f are implemented by ATC clients.
+ Vatlib calls this callback when an ATC controller wants to point out a target onto our
+ radar screen. The receiving client shall highlight target on the radar screen.
+ @todo Callback Setter and send method
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param target Callsign of the target.
+ @param ref User defined data.
+*/
+typedef void (* VatPointOutHandler_f)(
+    VatSessionID session,
+    const char *sender,
+    const char *target,
+    void *ref);
+
+/**
+ Functions of type VatIHaveTargetHandler_f are implemented by ATC clients.
+ Vatlib calls this callback when an ATC controller answered that he is currently
+ tracking the target. This is typically the reponse to the request who is tracking
+ the target.
+ @todo Callback Setter and send method
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param target Callsign of the target.
+ @param ref User defined data.
+*/
+typedef void (* VatIHaveTargetHandler_f)(
+    VatSessionID session,
+    const char *sender,
+    const char *target,
+    void *ref);
+
+/**
+ Functions of type VatPushFlightStripHandler_f are implemented by ATC clients.
+ Vatlib calls this callback when an ATC controller wants to push a flight strip
+ into our flight strip bay. Receiving ATC clients shall add the flight strip as
+ requested and with all the information received from the packet.
+ @todo Callback Setter and send method
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param target Callsign of the target.
+ @param type Type of the flight strip
+ @param annotations Array of strings with flight strip annotations
+ @param ref User defined data.
+*/
+typedef void (* VatPushFlightStripHandler_f)(
+    VatSessionID session,
+    const char *sender,
+    const char *target,
     int type,
     const char **annotations,
     void *ref);
 
 /**
-    Function signature for a start/end request for help
- */
-typedef void (* VatHandleHelpCommandHandler_f)(
+ Functions of type VatHelpCommandHandler_f are implemented by ATC clients.
+ Vatlib calls this callback when an ATC controller requested help or stopped it.
+ If help mode is active, the ATC client shall display the ATC controller in a different
+ way.
+ @param session Session pointer.
+ @param sender Callsign of the sending client.
+ @param wantsHelp True if the controller requested help and false if the request is over.
+ @param message Additional details about the help request.
+ @param ref User defined data.
+*/
+typedef void (* VatHelpCommandHandler_f)(
     VatSessionID session,
     const char *sender,
     bool wantsHelp,
@@ -1020,733 +1308,618 @@ typedef void (* VatHandleHelpCommandHandler_f)(
 
 /***************************************************************************
     CALLBACK INSTALLERS
- ***************************************************************************
-    These functions allow you to associate a callback with a session.  Install
-    a NULL handler to ignore a callback.  You pass in a void    "reference ptr"
-    that is returned to you in your callback (in the ref field).  This lets
-    you find local variables attached to this particular instance of a session.
- *
- */
-
-VATLIB_API void Vat_SetNetworkLogHandler(SeverityLevel severityLevel, VatlibLogHandler_t handler);
-VATLIB_API void Vat_SetNetworkLogSeverityLevel(SeverityLevel severityLevel);
+ ***************************************************************************/
+/**
+ These functions allow you to associate a callback with a session. Install
+ a NULL handler to delete a callback. You pass in a void "reference ptr"
+ that is returned to you in your callback (in the ref field). This lets
+ you find local variables attached to this particular instance of a session.
+*/
 
 /**
-    \brief ReceiveStateChange callback installer
+ Installs the NetworkLogHandler callback. Whenever vatlib is logging something
+ from the network side, this callback will be called.
+ It does not have any user defined field yet.
+ @param maximumSeverityLevel The maximal severity you want to receive.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatlibLogHandler_t
+*/
+VATLIB_API void Vat_SetNetworkLogHandler(
+        SeverityLevel maximumSeverityLevel,
+        VatlibLogHandler_t handler);
 
-    Installs a notification callback when the network connection stautus
-    has changed.
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+/**
+ Sets the maximal severity to a new value.
+*/
+VATLIB_API void Vat_SetNetworkLogSeverityLevel(
+        SeverityLevel maximumSeverityLevel);
+
+/**
+ Installs the StateChangeHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatStateChangeHandler_f
+*/
 VATLIB_API void Vat_SetStateChangeHandler(
     VatSessionID session,
     VatStateChangeHandler_f handler,
     void *ref);
 
 /**
-    \brief Message callback installer
-
-    Installs a notification callback when a text message has been received.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the TextMessageHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatTextMessageHandler_f
+*/
 VATLIB_API void Vat_SetTextMessageHandler(
     VatSessionID session,
     VatTextMessageHandler_f handler,
     void *ref);
 
 /**
-    \brief Radio callback installer
-
-    Installs a notification callback when a radio text message has been d.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the RadioMessageHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatRadioMessageHandler_f
+*/
 VATLIB_API void Vat_SetRadioMessageHandler(
     VatSessionID session,
     VatRadioMessageHandler_f handler,
     void *ref);
 
 /**
-    \brief PilotPosition callback installer
-
-    Installs a notification callback when a pilot position has been received.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the PilotPositionHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatPilotPositionHandler_f
+*/
 VATLIB_API void Vat_SetPilotPositionHandler(
     VatSessionID session,
     VatPilotPositionHandler_f handler,
     void *ref);
 
 /**
-    \brief InterimPilotPosition callback installer
-
-    Installs a notification callback when a interim pilot position has been received.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the SetInterimPilotPositionHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatInterimPilotPositionHandler_f
+*/
 VATLIB_API void Vat_SetInterimPilotPositionHandler(
     VatSessionID session,
-    VatPilotPositionHandler_f handler,
+    VatInterimPilotPositionHandler_f handler,
     void *ref);
 
 /**
-    \brief ATCPosition callback installer
-
-    Installs a notification callback when a ATC position has been received.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the AtcPositionHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatAtcPositionHandler_f
+*/
 VATLIB_API void Vat_SetAtcPositionHandler(
     VatSessionID session,
     VatAtcPositionHandler_f handler,
     void *ref);
+
 /**
-    \brief DeletePilot callback installer
-
-    Installs a callback notifying when a pilot has left the network.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the DeletePilotHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatDeletePilotHandler_f
+*/
 VATLIB_API void Vat_SetDeletePilotHandler(
     VatSessionID session,
     VatDeletePilotHandler_f handler,
     void *ref);
 
 /**
-    \brief StateChange callback installer
-
-    Installs a callback notifying when a controller has left the network.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the DeleteAtcHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatDeleteAtcHandler_f
+*/
 VATLIB_API void Vat_SetDeleteAtcHandler(
     VatSessionID session,
     VatDeleteAtcHandler_f handler,
     void *ref);
 
 /**
-    \brief Kill callback installer
-
-    Install a function callback to be notified when you have been kicked from the network.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the KillHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatKillHandler_f
+*/
 VATLIB_API void Vat_SetKillHandler(
     VatSessionID session,
     VatKillHandler_f handler,
     void *ref);
 
 /**
-    \brief Pong callback installer
-
-    Install a function callback to be notified about a pong echo from a previous ping.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the PongHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatPongHandler_f
+*/
 VATLIB_API void Vat_SetPongHandler(
     VatSessionID session,
     VatPongHandler_f handler,
     void *ref);
 
 /**
-    \brief FlightPlan callback installer
-
-    Installs a callback notifiying about an incoming flightplan.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the FlightPlanHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatFlightPlanHandler_f
+*/
 VATLIB_API void Vat_SetFlightPlanHandler(
     VatSessionID session,
     VatFlightPlanHandler_f handler,
     void *ref);
 
 /**
-    \brief HandoffRequest callback installer
-
-    Installs a callback notifiying about a handoff request. A handoff
-    request will be sent to another controller to take over tracking of
-    an aircraft.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-    \see Vat_SetHandoffAcceptanceHandler
-    \see Vat_SetHandoffCancelHandler
-  */
+ Installs the HandoffRequestHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatHandoffRequestHandler_f
+*/
 VATLIB_API void Vat_SetHandoffRequestHandler(
     VatSessionID session,
     VatHandoffRequestHandler_f handler,
     void *ref);
 
 /**
-    \brief HandoffAccepted callback installer
-
-    Installs a callback notifiying when another controller has
-    accepted your previous handoff request and is now tracking the
-    aircraft.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-    \see Vat_SetHandoffRequestHandler
-  */
+ Installs the HandoffAcceptedHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatHandoffAcceptedHandler_f
+*/
 VATLIB_API void Vat_SetHandoffAcceptedHandler(
     VatSessionID session,
     VatHandoffAcceptedHandler_f handler,
     void *ref);
 
 /**
-    \brief HandoffCancel callback installer
-
-    Installs a callback notifiying when another controller has
-    canceled your previous handoff request and is not tracking the
-    aircraft.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-    \see Vat_SetHandoffRequestHandler
-  */
-VATLIB_API void Vat_SetHandoffCancelHandler(
+ Installs the HandoffCancelledHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatHandoffCancelledHandler_f
+*/
+VATLIB_API void Vat_SetHandoffCancelledHandler(
     VatSessionID session,
-    VatHandoffCancelHandler_f handler,
+    VatHandoffCancelledHandler_f handler,
     void *ref);
 
 /**
-    \brief ACARSData callback installer
-
-    Installs a callback notifiying when ACARS data has been received.
-    Typical ACARS data is METAR.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetACARSResponseHandler(
-    VatSessionID session,
-    VatACARSDataHandler_f handler,
-    void *ref);
-
-/**
-    \brief ACARSRequest callback installer
-
-    IInstalls a callback notifiying when ACARS data is requested from you.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \todo Clarify the exact usage and data
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetACARSRequestHandler(
-    VatSessionID session,
-    VatACARSRequestHandler_f handler,
-    void *ref);
-
+ Installs the MetarRequestHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatMetarRequestHandler_f
+*/
 VATLIB_API void Vat_SetMetarRequestHandler(
     VatSessionID session,
     VatMetarRequestHandler_f handler,
     void *ref);
 
+/**
+ Installs the MetarResponseHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatMetarResponseHandler_f
+*/
 VATLIB_API void Vat_SetMetarResponseHandler(
     VatSessionID session,
     VatMetarResponseHandler_f handler,
     void *ref);
 
 /**
-    \brief InfoRequest callback installer
-
-    Installs a callback notifiying when another client is requesting information
-    from you. This request is for ATC clients only.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-    \see Vat_SetInfoReplyHandler
-  */
-VATLIB_API void Vat_SetInfoRequestHandler(
+ Installs the InfoRequestHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatInfoRequestHandler_f
+*/
+VATLIB_API void Vat_SetClientQueryHandler(
     VatSessionID session,
-    VatInfoRequestHandler_f handler,
+    VatClientQueryHandler_f handler,
     void *ref);
 
 /**
-    \brief InfoResponse callback installer
-
-    Installs a callback notifiying when a client has replied to your info
-    request.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-    \see Vat_SetInfoRequestHandler
-  */
-VATLIB_API void Vat_SetInfoResponseHandler(
+ Installs the ClientQueryResponseHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatInfoResponseHandler_f
+*/
+VATLIB_API void Vat_SetClientQueryResponseHandler(
     VatSessionID session,
-    VatInfoResponseHandler_f handler,
+    VatClientQueryResponseHandler_f handler,
     void *ref);
 
 /**
-    \brief InfoCAPSReply callback installer
-
-    Installs a callback notifiying when another client has replied to your
-    CAPS info request.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \see Vat_SetInfoRequestHandler
-    \todo CAPS should be a bit mask instead of strings
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-
-  */
+ Installs the InfoCAPSReplyHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatInfoCAPSReplyHandler_f
+*/
 VATLIB_API void Vat_SetInfoCAPSReplyHandler(
     VatSessionID session,
     VatInfoCAPSReplyHandler_f handler,
     void *ref);
 
+/**
+ Installs the VoiceRoomHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatVoiceRoomHandler_f
+*/
 VATLIB_API void Vat_SetVoiceRoomHandler(
     VatSessionID session,
     VatVoiceRoomHandler_f handler,
     void *ref);
 
+/**
+ Installs the ControllerAtisHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatControllerAtisHandler_f
+*/
 VATLIB_API void Vat_SetControllerAtisHandler(
     VatSessionID session,
     VatControllerAtisHandler_f handler,
     void *ref);
 
 /**
-    \brief TemperatureData callback installer
-
-    Installs a callback notifiying when temperature data has been received.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the TemperatureDataHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatTemperatureDataHandler_f
+*/
 VATLIB_API void Vat_SetTemperatureDataHandler(
     VatSessionID session,
     VatTemperatureDataHandler_f handler,
     void *ref);
 
 /**
-    \brief WindData callback installer
-
-    Installs a callback notifiying when wind data has been received.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the WindDataHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatWindDataHandler_f
+*/
 VATLIB_API void Vat_SetWindDataHandler(
     VatSessionID session,
     VatWindDataHandler_f handler,
     void *ref);
 
 /**
-    \brief CloudData callback installer
-
-    Installs a callback notifiying when cloud data has been received.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the CloudDataHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatCloudDataHandler_f
+*/
 VATLIB_API void Vat_SetCloudDataHandler(
     VatSessionID session,
     VatCloudDataHandler_f handler,
     void *ref);
 
+/**
+ Installs the AircraftConfigHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatAircraftConfigHandler_f
+*/
 VATLIB_API void Vat_SetAircraftConfigHandler(
     VatSessionID session,
     VatAircraftConfigHandler_f handler,
     void *ref);
 
 /**
-    \brief ATCClientCom callback installer
-
-    Installs a callback notifiying about a custom ATC client packet. This will
-    report only the subtype of the packet, not the data. Extensions to the protocol
-    should always be added to vatlib itself and end up in its own callback.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetATCClientComHandler(
+ Installs the CustomAtcPacketHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatCustomAtcPacketHandler_f
+*/
+VATLIB_API void Vat_SetCustomAtcPacketHandler(
     VatSessionID session,
-    VatATCClientComHandler_f handler,
+    VatCustomAtcPacketHandler_f handler,
     void *ref);
 
 /**
-    \brief PilotClientCom callback installer
-
-    Installs a callback notifiying about a custom pilot client packet. This will
-    report only the subtype of the packet, not the data. Extensions to the protocol
-    should always be added to vatlib itself and end up in its own callback.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \see Vat_SetCustomPilotPacketHandler
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetPilotClientComHandler(
-    VatSessionID session,
-    VatPilotClientComHandler_f handler,
-    void *ref);
-
-/**
-    \brief CustomPilotPacket callback installer
-
-    Installs a callback notifiying about a custom pilot client packet. This callback
-    will make subtype and data available. Use this, if you want to send custom
-    packets which are not going to be incorporated into the VATSIM protocol.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the CustomPilotPacketHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatCustomPilotPacketHandler_f
+*/
 VATLIB_API void Vat_SetCustomPilotPacketHandler(
     VatSessionID session,
     VatCustomPilotPacketHandler_f handler,
     void *ref);
 
 /**
-    \brief PilotInfoRequest callback installer
-
-    Installs a callback notifiying about an info request from another client.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \todo Pilot clients only
-    \see Vat_SetPilotInfoHandler
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the AircraftInfoRequestHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatAircraftInfoRequestHandler_f
+*/
 VATLIB_API void Vat_SetAircraftInfoRequestHandler(
     VatSessionID session,
     VatAircraftInfoRequestHandler_f handler,
     void *ref);
 
 /**
-    \brief StateChange callback installer
-
-    Installs a callback notifiying when a pilot client has answered your info
-    request.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \see Vat_SetPilotInfoRequestHandler
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the AircraftInfoHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatAircraftInfoResponseHandler_f
+*/
 VATLIB_API void Vat_SetAircraftInfoHandler(
     VatSessionID session,
-    VatAircraftInfoHandler_f handler,
+    VatAircraftInfoResponseHandler_f handler,
     void *ref);
 
+/**
+ Installs the LegacyAircraftInfoHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatLegacyAircraftInfoHandler_f
+*/
 VATLIB_API void Vat_SetLegacyAircraftInfoHandler(
     VatSessionID session,
     VatLegacyAircraftInfoHandler_f handler,
     void *ref);
 
 /**
-    \brief HandleIPC callback installer
-
-    Installs a callback notifiying when another client is trying to send an
-    FSUIPC commant to us.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetHandleIPCHandler(
+ Installs the IPCHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatIPCHandler_f
+*/
+VATLIB_API void Vat_SetIPCHandler(
     VatSessionID session,
-    VatHandleIPCHandler_f handler,
+    VatIPCHandler_f handler,
     void *ref);
 
 /**
-    \brief HandleSharedState callback installer
-
-    Installs a callback notifiying when another client is sending its shared
-    state to us, because it probably changed.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the TargetScratchpadHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatTargetsScratchpadHandler_f
+*/
 VATLIB_API void Vat_SetTargetScratchpadHandler(
     VatSessionID session,
     VatTargetsScratchpadHandler_f handler,
     void *ref);
 
 /**
-    \brief HandleLandlineCommand callback installer
-
-    Installs a callback notifiying when ...
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetHandleLandlineCommandHandler(
+ Installs the LandlineCommandHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatStateChangeHandler_f
+*/
+VATLIB_API void Vat_SetLandlineCommandHandler(
     VatSessionID session,
-    VatHandleLandlineCommandHandler_f handler,
-    void *ref);
-/**
-    \brief StateChange callback installer
-
-    Installs a callback notifiying when ...
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetHandleTrackingCommandHandler(
-    VatSessionID session,
-    VatHandleTrackingCommandHandler_f handler,
+    VatLandlineCommandHandler_f handler,
     void *ref);
 
 /**
-    \brief StateChange callback installer
-    Installs a notification callback when the network connection stautus
-    has changed.
-    Installs a callback notifiying when ...
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetHandleControllerBreakCommandHandler(
+ Installs the ControllerBreakCommandHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatControllerBreakCommandHandler_f
+*/
+VATLIB_API void Vat_SetControllerBreakCommandHandler(
     VatSessionID session,
     VatControllerBreakCommandHandler_f handler,
     void *ref);
 
 /**
-    \brief StateChange callback installer
-
-    Installs a callback notifiying when ...
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetHandleSharedStateIDHandler(
+ Installs the SharedStateIDHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatSharedStateIDHandler_f
+*/
+VATLIB_API void Vat_SetSharedStateIDHandler(
     VatSessionID session,
-    VatHandleSharedStateIDHandler_f handler,
+    VatSharedStateIDHandler_f handler,
     void *ref);
 
 /**
-    \brief StateChange callback installer
-
-    Installs a callback notifiying when ...
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetHandleSharedStateDIHandler(
+ Installs the SharedStateDIHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatSharedStateDIHandler_f
+*/
+VATLIB_API void Vat_SetSharedStateDIHandler(
     VatSessionID session,
-    VatHandleSharedStateDIHandler_f handler,
+    VatSharedStateDIHandler_f handler,
     void *ref);
 
 /**
-    \brief StateChange callback installer
-
-    Installs a callback notifiying when ...
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetHandlePushStripCommandHandler(
+ Installs the PushFlightStripHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatPushFlightStripHandler_f
+*/
+VATLIB_API void Vat_SetPushFlightStripHandler(
     VatSessionID session,
-    VatHandlePushStripCommandHandler_f handler,
+    VatPushFlightStripHandler_f handler,
     void *ref);
 
 /**
-    \brief StateChange callback installer
-
-    Installs a callback notifiying when ...
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
-VATLIB_API void Vat_SetHandleHelpCommandHandler(
+ Installs the HelpCommandHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatStateChangeHandler_f
+*/
+VATLIB_API void Vat_SetHelpCommandHandler(
     VatSessionID session,
-    VatHandleHelpCommandHandler_f handler,
+    VatHelpCommandHandler_f handler,
     void *ref);
 
 /**
-    \brief StateChange callback installer
-
-    Installs a callback notifiying when an error occured.
-
-    \param session The session ID to be used for this operation.
-    \param handler Pass a function pointer to install or
-       nullptr to deinstall the callback.
-    \param ref Pointer to user defined data, which will be passed to the callback
-    \warning Your callback must be thread safe, because it is not garuanteed that
-       the callback is always called from the main thread.
-  */
+ Installs the ServerErrorHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatServerErrorHandler_f
+*/
 VATLIB_API void Vat_SetServerErrorHandler(
     VatSessionID session,
     VatServerErrorHandler_f handler,
     void *ref);
 
+/** Execute all pending network tasks synchronous. Call this method
+ regularly to keep vatlib busy. This method will actually trigger most of the callbacks.
+*/
 VATLIB_API int Vat_ExecuteNetworkTasks(
     VatSessionID session);
 
+/** Execute all pending network tasks asynchronous. Call this method
+ only once and vatlib will run in the background. Most callbacks will be called from a different
+ thread in this case. In order to stop, call @see Vat_StopAsyncNetworkExecution.
+ @param session
+*/
 VATLIB_API void Vat_ExecuteNetworkTasksAsync(
     VatSessionID session);
 
+/** Stops asynchronous execution
+ @param session
+*/
 VATLIB_API void Vat_StopAsyncNetworkExecution(
     VatSessionID session);
 
 /**
-    Vat_CreateNetworkSession creates a new networking session. Most applications will have only one session however
-    someday this may change.
+ Vat_CreateNetworkSession creates a new networking session. Most applications will have only one session however
+ someday this may change.
 
-    \param clientVersionString  A string name for your application including version number. Eg. "XTower 1.0". This information
-        will be sent to other clients who may query your version.
-    \param clientMajorVersion   Integer major version number eg. the "1" in 1.3
-    \param clientMinorVersion   Integer minor version number eg. the "3" in 1.3
-    \param hostVersion          A string name for the host application. If you're a plugin for Flight Sim, you'd put the MSFS name here.
-    \param publicClientID       Your public client ID as issued by the VATSIM administrator. Leave NULL for other networks.
-    \param privateKey           Your private key as issued by the VATSIM administrator. Leave NULL for other networks.
-    \param clientCAPS           Integer flags which capabilities this clients has.
+ @param clientVersionString  A string name for your application including version number. Eg. "XTower 1.0". This information
+ will be sent to other clients who may query your version.
 
-    \todo clientCAPS should be a bitflag instead of a string
-    \return A session ID which is essentialy a pointer to your session instance.
-    \see Vat_DestroyNetworkSession
+ @param clientMajorVersion Integer major version number eg. the "1" in 1.3
+ @param clientMinorVersion Integer minor version number eg. the "3" in 1.3
+ @param hostVersion A string name for the host application. If you're a plugin for Flight Sim, you'd put the MSFS name here.
+ @param publicClientID Your public client ID as issued by the VATSIM administrator. Leave NULL for other networks.
+ @param privateKey Your private key as issued by the VATSIM administrator. Leave NULL for other networks.
+ @param clientCAPS Integer flags which capabilities this clients has.
+
+ @todo clientCAPS should be a bitflag instead of a string
+ @return A session ID which is essentialy a pointer to your session instance.
+ @see Vat_DestroyNetworkSession
 */
 VATLIB_API VatSessionID Vat_CreateNetworkSession(
     VatServerType serverType,
@@ -1759,80 +1932,84 @@ VATLIB_API VatSessionID Vat_CreateNetworkSession(
     int clientCapabilities);
 
 /**
-    Vat_DestroyNetworkSession deallocates an existing session. This should be done when a session is disconnected and will not be used anymore.
+ Vat_DestroyNetworkSession deallocates an existing session. This should be done when a session is
+ disconnected and will not be used anymore.
 
-    \param session The session ID of the session that you want to terminate.
-    \return None
-    \see Vat_CreateNetworkSession
+ @param session The session ID of the session that you want to terminate.
+ @return None
+ @see Vat_CreateNetworkSession
 */
 VATLIB_API void Vat_DestroyNetworkSession(VatSessionID session);
 
 /**
-    Vat_SpecifyPilotLogon is used to declare the information for a pilot connection to the network. This does NOT connect you to the network by itself.
+ Vat_SpecifyPilotLogon is used to declare the information for a pilot connection to the network.
+ This does NOT connect you to the network by itself.
 
-    \param session  The session ID to be used for this operation.
-    \param server   A string containing the server address. It can be a string IP address or hostname.
-    \param port     The port to connect to the server on.
-    \param id       A string containing the CID of the pilot.
-    \param password A string containing the password of the pilot.
-    \param info     A struct containing the pilot specific information necessary for the connection to the server.
-    \return None
-    \see VatPilotConnection_t
+ @param session The session ID to be used for this operation.
+ @param host A string containing the host address. It can be a string IP address or hostname.
+ @param port The port to connect to the server on.
+ @param id A string containing the CID of the pilot.
+ @param password A string containing the password of the pilot.
+ @param info A struct containing the pilot specific information necessary for the connection to the server.
+ @return None
+ @see VatPilotConnection_t
 */
 VATLIB_API void Vat_SpecifyPilotLogon(
     VatSessionID session,
-    const char *server,
+    const char *host,
     int port,
     const char *id,
     const char *password,
     const VatPilotConnection *info);
 
 /**
-    Vat_SpecifyATCLogon is used to declare the information for an ATC connection to the network. This does NOT connect you to the network by itself.
+ Vat_SpecifyATCLogon is used to declare the information for an ATC connection to the network.
+ This does NOT connect you to the network by itself.
 
-    \param session  The session ID to be used for this operation.
-    \param server   A string containing the server address. It can be a string IP address or hostname.
-    \param port     A port > 0 to connect to the server on.
-    \param id       A string containing the CID of the controller.
-    \param password A string containing the password of the controller.
-    \param info     A struct containing the controller specific information necessary for the connection to the server.
-    \return None
-    \see VatATCConnection_t
+ @param session The session ID to be used for this operation.
+ @param host A string containing the server address. It can be a string IP address or hostname.
+ @param port A port > 0 to connect to the server on.
+ @param id A string containing the CID of the controller.
+ @param password A string containing the password of the controller.
+ @param info A struct containing the controller specific information necessary for the connection to the server.
+ @return None
+ @see VatATCConnection_t
 */
 VATLIB_API void Vat_SpecifyATCLogon(
     VatSessionID session,
-    const char *server,
+    const char *host,
     int port,
     const char *id,
     const char *password,
     const VatAtcConnection *info);
 
 /**
-    Vat_Logon attempts to actually logon to the server or reconnect if disconnected. You must have already specified connection information
-    using Vat_SpecifyPilotLogon or Vat_SpecifyATCLogon.
+ Vat_Logon attempts to actually logon to the server or reconnect if disconnected.
+ You must have already specified connection information using Vat_SpecifyPilotLogon or Vat_SpecifyATCLogon.
 
-    \param session The session ID to be used for this operation.
-    \see Vat_Logoff
-    \see Vat_SpecifyPilotLogon
-    \see Vat_SpecifyATCLogon
+ @param session The session ID to be used for this operation.
+ @see Vat_Logoff
+ @see Vat_SpecifyPilotLogon
+ @see Vat_SpecifyATCLogon
 */
 VATLIB_API void Vat_Logon(VatSessionID session);
 
 /**
-    Vat_Logoff attempts to logoff the network.
+ Vat_Logoff attempts to logoff from the network.
 
-    \param session The session ID to be used for this operation.
-    \return None
-    \see Vat_Logon
+ @param session The session ID to be used for this operation.
+ @return None
+ @see Vat_Logon
 */
 VATLIB_API void Vat_Logoff(VatSessionID session);
 
 /**
-    Vat_GetStatus reads the status of your connection. Note that you should avoid using this function because it is better to install a notifier to detect
-    when a status has changed. This routine does NOT read new status changes so no work is done and no callbacks will get called.
+ Vat_GetStatus reads the status of your connection. Note that you should avoid using this function because
+ it is better to install a notifier to detect when a status has changed. This routine does NOT read new
+ status changes so no work is done and no callbacks will get called.
 
-    \param session  The session ID to be used for this operation.
-    \return None
+ @param session  The session ID to be used for this operation.
+ @return Current connection status
 */
 VATLIB_API VatConnectionStatus Vat_GetStatus(VatSessionID session);
 
@@ -1842,12 +2019,12 @@ VATLIB_API VatConnectionStatus Vat_GetStatus(VatSessionID session);
  ***************************************************************************/
 
 /**
-    Send a private 1-to-1 chat message.
+ Send a private 1-to-1 chat message.
 
-    \param session  The session ID to be used for this operation.
-    \param receiver A string containing the receiver callsign
-    \param message  A string containing the text message
-    \return None
+ @param session  The session ID to be used for this operation.
+ @param receiver A string containing the receiver callsign
+ @param message  A string containing the text message
+ @return None
 */
 VATLIB_API void Vat_SendTextMessage(
     VatSessionID session,
@@ -1855,108 +2032,161 @@ VATLIB_API void Vat_SendTextMessage(
     const char *message);
 
 /**
-    Send a radio message on one or more frequencies, specified as an array of doubles.
+ Send a radio message on one or more frequencies, specified as an array of ints.
 
-    \param session      The session ID to be used for this operation.
-    \param frequencies  Pointer to array of frequencies as integer values, e.g. 12345 for 123.45 MHz
-    \param freqCount    Size of frequency array
-    \param message      A string containing the text message
-    \return None
+ @param session The session ID to be used for this operation.
+ @param frequencies Pointer to array of frequencies as integer values, e.g. 12345 for 123.45 MHz
+ @param freqCount Size of frequency array
+ @param message A string containing the text message
+ @return None
 */
-VATLIB_API void Vat_SendRadioMessage(VatSessionID session,
-                                     int *frequencies,
-                                     int freqCount,
-                                     const char *message);
+VATLIB_API void Vat_SendRadioMessage(
+    VatSessionID session,
+    int *frequencies,
+    int freqCount,
+    const char *message);
 
 /**
-    Used to request information from a client or server. Passing null into a
-    callsign will probe the server for information.
+ Send a message to all clients with rating SUP or ADM
 
-    \param session The session ID to be used for this operation.
-    \param type Type of information you want to request
-    \param callsign Client callsign, you want to probe
-    \return None
+ @param session The session ID to be used for this operation.
+ @param message A string containing the text message
+ @return None
 */
-VATLIB_API void Vat_RequestInformation(
+VATLIB_API void Vat_SendWallop(
     VatSessionID session,
-    VatInfoQueryType type,
+    const char *message);
+
+/**
+ Used to request information from a client or server. Passing null as
+ callsign will probe the server for information.
+
+ @param session The session ID to be used for this operation.
+ @param type Type of information you want to query
+ @param callsign Client callsign, you want to probe
+ @return None
+*/
+VATLIB_API void Vat_SendClientQuery(
+    VatSessionID session,
+    VatClientQueryType type,
     const char *callsign);
 
 /**
-    Sends back information to the requester
+ Reply to a client query.
 
-    \param session The session ID to be used for this operation.
-    \param type Type of information you want to request
-    \param callsign Client callsign, you want to probe
-    \param string containing requested data
-    \return None
+ @param session The session ID to be used for this operation.
+ @param type Type of information you want to request
+ @param callsign Client callsign, you want to probe
+
+ @param payload Array of data depending on the type of query response.
+ The client is only allowed to send two types of client query responses:
+
+ @li vatClientQueryName
+ @li vatClientQueryFreq.
+
+ The rest is handled internally in vatlib.
+
+ vatClientQueryFreq:
+ payload should have ONE string with the frequency in decimal, e.g. "119.90".
+ The unit is per default MHz and does not need to be added.
+
+ vatClientQueryInfo:
+ Don't use it! Vatlib will send it itself. If you try anyway, it
+ will be ignored.
+
+ vatClientQueryAtis:
+ Don't use it. Use Vat_SendControllerAtis instead.
+
+ vatClientQueryServer:
+ Don't use it! Vatlib will send it itself. If you try anyway, it
+ will be ignored.
+
+ vatClientQueryName:
+ payload should contain two strings. The first one is the users name and is
+ mandatory. The second one should contain any additional usefull information
+ about the user himself. This is for example used by Euroscope to send the
+ used AIRAC information. Leave it blank if you don't want to send anything.
+
+ vatClientQueryAtc:
+ Don't use it! Vatlib will send it itself. If you try anyway, it
+ will be ignored.
+
+ vatClientQueryCaps:
+ Don't use it! Vatlib will send it itself. If you try anyway, it
+ will be ignored.
+
+ vatClientQueryIP:
+ Don't use it! Vatlib will send it itself. If you try anyway, it
+ will be ignored.
+
+ @return None
+ @see VatClientQueryType, Vat_SendControllerAtis
 */
-VATLIB_API void Vat_SendInformation(
-    VatSessionID session,
-    VatInfoQueryType type,
+VATLIB_API void Vat_SendClientQueryResponse(VatSessionID session,
+    VatClientQueryType type,
     const char *callsign,
-    const char *data);
+    const char **payload,
+    int payloadSize);
 
 /**
-    Request CSL model info from someone else.
+ Request CSL model info from someone else.
 
-    \param session The session ID to be used for this operation.
-    \param callsign Client callsign, you want to request from
-    \return None
+ @param session The session ID to be used for this operation.
+ @param callsign Client callsign, you want to request from
+ @return None
 */
 VATLIB_API void Vat_RequestAircraftInfo(
     VatSessionID session,
     const char *callsign);
-
 
 /***************************************************************************
     FUNCTIONS FOR ATC
  ***************************************************************************/
 
 /**
-    Send an ATC position update packet.
+ Send an ATC position update packet.
 
-    \param session The session ID to be used for this operation.
-    \param info Struct containing ATC position details
-    \return None
-    \see VatAtcPosition
+ @param session The session ID to be used for this operation.
+ @param info Struct containing ATC position details
+ @return None
+ @see VatAtcPosition
 */
 VATLIB_API void Vat_SendATCUpdate(
     VatSessionID session,
     const VatAtcPosition *info);
 
 /**
-    Requests an ATC Handoff.
+ Requests an ATC Handoff.
 
-    \param session The session ID to be used for this operation.
-    \param receiver Controller callsign, from which you are requesting
-    \param target Aircraft callsign, you would to hand off
-    \return None
-    \see VatAtcPosition
+ @param session The session ID to be used for this operation.
+ @param receiver Controller callsign, from which you are requesting
+ @param target Aircraft callsign, you would to hand off
+ @return None
+ @see VatAtcPosition
 */
 VATLIB_API void Vat_RequestHandoff(VatSessionID session,
     const char *receiver,
     const char *target);
 
 /**
-    Accept an ATC Handoff
+ Accept an ATC Handoff
 
-    \param session The session ID to be used for this operation.
-    \param receiver Controller callsign, who requested the handoff
-    \param target Aircraft callsign, which is handed off
-    \return None
+ @param session The session ID to be used for this operation.
+ @param receiver Controller callsign, who requested the handoff
+ @param target Aircraft callsign, which is handed off
+ @return None
 */
 VATLIB_API void Vat_AcceptHandoff(VatSessionID session,
     const char *receiver,
     const char *target);
 
 /**
-    Cancel a handoff with another ATC.
+ Cancel a handoff with another ATC.
 
-    \param session The session ID to be used for this operation.
-    \param receiver Controller callsign, who requested the handoff
-    \param target Aircraft callsign, which is handed off
-    \return None
+ @param session The session ID to be used for this operation.
+ @param receiver Controller callsign, who requested the handoff
+ @param target Aircraft callsign, which is handed off
+ @return None
 */
 VATLIB_API void Vat_CancelHandoff(
     VatSessionID session,
@@ -1964,13 +2194,13 @@ VATLIB_API void Vat_CancelHandoff(
     const char *target);
 
 /**
-    Amend a flight plan. The one stored on the server will be overwritten
-    with the one you are sending now.
+ Amend a flight plan. The one stored on the server will be overwritten
+ with the one you are sending now.
 
-    \param session The session ID to be used for this operation.
-    \param callsign Aircraft callsign, which flightplan needs to be amended.
-    \param flightplan New full flightplan including all changed you have made.
-    \return None
+ @param session The session ID to be used for this operation.
+ @param callsign Aircraft callsign, which flightplan needs to be amended.
+ @param flightplan New full flightplan including all changed you have made.
+ @return None
 */
 VATLIB_API void Vat_AmendFlightPlan(
     VatSessionID session,
@@ -1984,26 +2214,26 @@ VATLIB_API void Vat_SendTargetsScratchpad(
     const char *scratchpad);
 
 /**
-    Send an ASRC-type ID to check if someone is a next-gen client.
+ Send an ASRC-type ID to check if someone is a next-gen client.
 
-    \param session The session ID to be used for this operation.
-    \param atc
-    \return None
+ @param session The session ID to be used for this operation.
+ @param atc
+ @return None
 */
 VATLIB_API void Vat_SendSharedStateID(
     VatSessionID session,
     const char *atc);
 
 /**
-    Send a land line command to other aircraft.
+ Send a land line command to other aircraft.
 
-    \param session The session ID to be used for this operation.
-    \param callsign Aircraft callsign
-    \param command Landline command
-    \param type landline command type
-    \param ip
-    \param port
-    \return None
+ @param session The session ID to be used for this operation.
+ @param callsign Aircraft callsign
+ @param command Landline command
+ @param type landline command type
+ @param ip
+ @param port
+ @return None
 */
 VATLIB_API void Vat_SendLandlineCommand(
     VatSessionID session,
@@ -2014,13 +2244,13 @@ VATLIB_API void Vat_SendLandlineCommand(
     int port);
 
 /**
-    Send a tracking command.
+ Send a tracking command.
 
-    \param session The session ID to be used for this operation.
-    \param atc ATC callsign, may be null if not needed.
-    \param aircraft Aircraft callsign
-    \param command Tracking command
-    \return None
+ @param session The session ID to be used for this operation.
+ @param atc ATC callsign, may be null if not needed.
+ @param aircraft Aircraft callsign
+ @param command Tracking command
+ @return None
 */
 VATLIB_API void Vat_SendTrackingCommand(
     VatSessionID session,
@@ -2029,28 +2259,37 @@ VATLIB_API void Vat_SendTrackingCommand(
     VatTrackingCmd command);
 
 /**
-    Turns the break on and off
+ Turns the break on and off
 
-    \param session The session ID to be used for this operation.
-    \param wantsBreak Pass true to turn the break on and false to turn it off.
-    \return None
+ @param session The session ID to be used for this operation.
+ @param wantsBreak Pass true to turn the break on and false to turn it off.
+ @return None
 */
 VATLIB_API void Vat_SendBreakCommand(
     VatSessionID session,
     bool wantsBreak);
 
-VATLIB_API void Vat_SendControllerAtis(VatSessionID session,
-                                       const char *callsign,
-                                       const VatControllerAtis *atis);
+/**
+ Send controller atis
+
+ @param session The session ID to be used for this operation.
+ @param receiver Receiver callsign
+ @param atis Controller atis struct
+ @return None
+*/
+VATLIB_API void Vat_SendControllerAtis(
+    VatSessionID session,
+    const char *receiver,
+    const VatControllerAtis *atis);
 
 /**
-    Sends a secondary ATC position update
+ Sends a secondary ATC position update
 
-    \param session The session ID to be used for this operation.
-    \param index ???
-    \param latitude
-    \param longitude
-    \return None
+ @param session The session ID to be used for this operation.
+ @param index ???
+ @param latitude
+ @param longitude
+ @return None
 */
 VATLIB_API void Vat_SendSecondaryATCUpdate(
     VatSessionID session,
@@ -2059,43 +2298,29 @@ VATLIB_API void Vat_SendSecondaryATCUpdate(
     double longitude);
 
 /**
-    Pushes a pilots flight strip into the bay of a controller
+ Pushes a pilots flight strip with a type identifier and array of annotations - Added by RAC on 02/28/2007
 
-    \param session The session ID to be used for this operation.
-    \param atcCallsign Controller callsign the flight strip is pushed to.
-    \param aircraftCallsign Aircraft callsign, the flight strip belongs to.
-    \return None
-*/
-VATLIB_API void Vat_PushFlightStrip(
-    VatSessionID session,
-    const char *atcCallsign,
-    const char *aircraftCallsign);
-
-/**
-    Pushes a pilots flight strip with a type identifier and array of annotations - Added by RAC on 02/28/2007
-
-    \param session The session ID to be used for this operation.
-    \param atcCallsign Controller callsign the flight strip is pushed to.
-    \param aircraftCallsign Aircraft callsign, the flight strip belongs to.
-    \param type ???
-    \param annotations Array of strings with annotations
-    \return None
+ @param session The session ID to be used for this operation.
+ @param receiver Controller callsign the flight strip is pushed to.
+ @param target Aircraft callsign, the flight strip belongs to.
+ @param type ???
+ @param annotations Array of strings with annotations
+ @return None
 */
 VATLIB_API void Vat_PushFlightStripEx(
     VatSessionID session,
-    const char *atcCallsign,
-    const char *aircraftCallsign,
+    const char *receiver,
+    const char *target,
     int type,
     const char **annotations);
 
 /**
-    Turns the request for help on and off
+ Turns the request for help on and off
 
-
-    \param session The session ID to be used for this operation.
-    \param needHelp Pass true to turn the help request on and false to turn it off.
-    \param message Pass in a optional message. May be null if not needed.
-    \return None
+ @param session The session ID to be used for this operation.
+ @param needHelp Pass true to turn the help request on and false to turn it off.
+ @param message Pass in a optional message. May be null if not needed.
+ @return None
 */
 VATLIB_API void Vat_SendHelpCommand(
     VatSessionID session,
@@ -2103,109 +2328,133 @@ VATLIB_API void Vat_SendHelpCommand(
     const char *message);
 
 /**
-    Notifies all in-range clients that our controller info or ATIS has changed.
-    This will automatically increase the ATIS identifier for other ATC clients
-    in range.
+ Notifies all in-range clients that our controller info or ATIS has changed.
+ This will automatically increase the ATIS identifier for other ATC clients
+ in range.
 
-    \param session The session ID to be used for this operation.
-    \return None
+ @param session The session ID to be used for this operation.
+ @return None
 */
 VATLIB_API void Vat_NotifyNewInfo(
     VatSessionID session);
-
-
 
 /***************************************************************************
     FUNCTIONS FOR PILOTS
  ***************************************************************************/
 
 /**
-    Send a pilot position update packet.
+ Send a pilot position update packet.
 
-    \param session The session ID to be used for this operation.
-    \param info Struct with pilot position details
-    \return None
-    \see VatPilotPosition
+ @param session The session ID to be used for this operation.
+ @param info Struct with pilot position details
+ @return None
+ @see VatPilotPosition
 */
 VATLIB_API void Vat_SendPilotUpdate(
     VatSessionID session,
     const VatPilotPosition *info);
 
 /**
-    Send an interim pilot position update packet. This is sent to a specific
-    callsign only instead of broadcasted.
-    It depends on the receiving clients software if they accept intermin pilot
-    position updates.
+ Send an interim pilot position update packet. This is sent to a specific
+ callsign only instead of broadcasted.
+ It depends on the receiving clients software if they accept intermin pilot
+ position updates.
 
-    \param session The session ID to be used for this operation.
-    \param callsign Receiving callsign
-    \param info Struct with pilot position details
-    \return None
-    \see VatPilotPosition
+ @param session The session ID to be used for this operation.
+ @param callsign Receiving callsign
+ @param pilotPosition Struct with pilot position details
+ @return None
+ @see VatPilotPosition
 */
 VATLIB_API void Vat_SendInterimPilotUpdate(
     VatSessionID session,
-    const char *callsign,
-    const VatPilotPosition *info);
+    const char *receiver,
+    const VatInterimPilotPosition *pilotPosition);
 
 /**
-    Sends the server a flight plan.
+ Sends the server a flight plan.
 
-    \param session The session ID to be used for this operation.
-    \param flightPlan Your flightplan
-    \return None
+ @param session The session ID to be used for this operation.
+ @param flightPlan Your flightplan
+ @return None
 */
 VATLIB_API void Vat_SendFlightPlan(
     VatSessionID session,
     const VatFlightPlan *flightPlan);
 
 /**
-    Tell another client about your plane's info (CSL model, etc.)
+ Tell another client about your plane's info (CSL model, etc.)
 
-    \param session The session ID to be used for this operation.
-    \param callsign Receiver callsign
-    \param engineType Engine Type
-    \param CSLModel A string containing your CSL model
-    \return None
-    \deprecated Do not use this method anymore. This legacy is just
-    here for SB2.3 clients. Most should use the modern one.
-    \see Vat_SendModernPlaneInfo
+ @param session The session ID to be used for this operation.
+ @param receiver Receiver callsign
+ @param engineType Engine Type
+ @param CSLModel A string containing your CSL model
+ @return None
+ @deprecated Do not use this method anymore. This legacy is just
+ here for SB2.3 clients. Most should use the modern one.
+ @see Vat_SendModernPlaneInfo
 */
 VATLIB_API void Vat_SendLegacyPlaneInfo(
     VatSessionID session,
-    const char *callsign,
+    const char *receiver,
     VatEngineType engineType,
     const char *CSLModel);
 
 /**
-    Tell another client about your plane's info (CSL model, etc.).
-    This is the modern send plane info that SB3, FSInn and XSB will use.
+ Tell another client about your plane's info (CSL model, etc.).
+ This is the modern send plane info that SB3, FSInn and XSB will use.
 
-    \param session The session ID to be used for this operation.
-    \param callsign Receiver callsign
-    \param info Struct with plane information
-    \return None
+ @param session The session ID to be used for this operation.
+ @param receiver Receiver callsign
+ @param info Struct with plane information
+ @return None
 */
 VATLIB_API void Vat_SendModernPlaneInfo(
     VatSessionID session,
-    const char *callsign,
+    const char *receiver,
     const VatAircraftInfo *info);
 
+/**
+ Send JSON encoded aircraft config to target callsign.
+
+ @param session The session ID to be used for this operation.
+ @param receiver Receiver callsign
+ @param aircraftConfig JSON string
+ @return None
+*/
 VATLIB_API void Vat_SendAircraftConfig(
     VatSessionID session,
     const char *receiver,
     const char *aircraftConfig);
 
+/**
+ Broadcast JSON encoded aircraft config to everyone in range.
+
+ @param session The session ID to be used for this operation.
+ @param aircraftConfig JSON string
+ @return None
+*/
 VATLIB_API void Vat_SendAircraftConfigBroadcast(
     VatSessionID session,
     const char *aircraftConfig);
 
+/**
+ Send a custom pilot packet to target. This can be any subtype, as long
+ as it does not clash with the existing subtypes which are known to vatlib.
+
+ @param session The session ID to be used for this operation.
+ @param receiver Receiver callsign
+ @param subType Packet subtype
+ @param data Array of strings containing the packet tokens
+ @param dataSize Size of tokens
+ @return None
+*/
 VATLIB_API void Vat_SendCustomPilotPacket(
     VatSessionID session,
     const char *receiver,
-    const char *packetSubType,
+    const char *subType,
     const char **data,
-    int dataCount);
+    int dataSize);
 
 
 /***************************************************************************
@@ -2213,65 +2462,83 @@ VATLIB_API void Vat_SendCustomPilotPacket(
  ***************************************************************************/
 
 /**
-    Kills a user off of the server with a message
+ Kills a user off of the server with a message
 
-    \param session The session ID to be used for this operation.
-    \param callsign A string containing the callsign to be killed from the network
-    \param message A string containing a message to the user
-    \return None
+ @param session The session ID to be used for this operation.
+ @param callsign A string containing the callsign to be killed from the network
+ @param message A string containing a message to the user
+ @return None
 */
 VATLIB_API void Vat_KillUser(
     VatSessionID session,
-    const char *callsign,
+    const char *receiver,
     const char *message);
 
 /**
-    Sends a ping packet to the server.
-    Pass in a callsign to ping a user, *A to ping all ATC or ?? to ping everyone.
+ Sends a ping packet to the server.
+ Pass in a callsign to ping a user, *A to ping all ATC or ?? to ping everyone.
 
-    \param session The session ID to be used for this operation.
-    \param callsign A string containing the receiver callsign
-    \return None
+ @param session The session ID to be used for this operation.
+ @param receiver A string containing the receiver callsign
+ @return None
 */
 VATLIB_API void Vat_SendPing(
     VatSessionID session,
-    const char *callsign);
+    const char *receiver);
 
 /**
-    Sends a pong back after receiving a ping request.
+ Sends a pong back after receiving a ping request.
 
-    \param session The session ID to be used for this operation.
-    \param callsign A string containing the receiver callsign
-    \param time Format???
-    \return None
+ @param session The session ID to be used for this operation.
+ @param receiver A string containing the receiver callsign
+ @param time Format???
+ @deprecated This method is kept for backward compatibility, but doesn't not send
+ anymore anything. A ping is answered by vatlib automatically. So no need to worry.
+ @return None
 */
-
 VATLIB_API void Vat_SendPong(
     VatSessionID session,
-    const char *callsign,
+    const char *receiver,
     const char *time);
 
 /***************************************************************************
     WEATHER FUNCTIONS
  ***************************************************************************/
 
-/* Used to request ACARS information. */
+/**
+ Sends a Metar request.
+
+ @param session The session ID to be used for this operation.
+ @param station A string with ICAO identifier of the station
+ @return None
+*/
 VATLIB_API void Vat_RequestMetar(
     VatSessionID session,
     const char *station);
 
-/* Sends ACARS information to receiver. */
+/**
+ Sends Metar data.
+
+ @param session The session ID to be used for this operation.
+ @param receiver A string containing the receiver callsign
+ @param data Metar
+ @return None
+*/
 VATLIB_API void Vat_SendMetar(
     VatSessionID session,
     const char *receiver,
-    const char *data);
+    const char *metar);
 
 /**
-    Sends a request to the server for weather
+ Sends a request to the server for weather. The response from
+ the server are detailed layers of wind, clouds and temperature.
+ They are calculated from the local METAR and some additional
+ woodoo. So their usage is questionable. Consider using
+ @see Vat_RequestMetar instead.
 
-    \param session The session ID to be used for this operation.
-    \param station The station whether is requested for
-    \return None
+ @param session The session ID to be used for this operation.
+ @param station The station whether is requested for
+ @return None
 */
 VATLIB_API void Vat_RequestWeather(
     VatSessionID session,
@@ -2281,13 +2548,12 @@ VATLIB_API void Vat_RequestWeather(
     GENERAL VVL NOTES
  ****************************************************************
 
-    Your application is responsable for memory management of all
-    VVL "objects" - each one has a Create and Delete routine.
+ Your application is responsable for memory management of all
+ Voice objects - each one has a Create and Delete routine.
 
-    Like PCSB, most callbacks take a void    parameter.  You can
-    use this to pass data from your call out of VVL to your
-    callback.
-
+ Like Network, most callbacks take a void parameter. You can
+ use this to pass data from your call out of Voice to your
+ callback.
 */
 
 #if defined(__cplusplus) && defined(VVL_BUILDING_LIB)
@@ -2541,12 +2807,18 @@ VATLIB_API void Vat_ConnectProducerConsumerToProducerConsumer(
 */
 
 /**
-    Vat_CreateUDPAudioPort
- *
-    Creates a new VVL UDP audio port. Pass the UDP port number that your
-    client should use.  This is usually port 3290.  You should only need
-    one of these in your client.
- *
+    Vat_CreateUDPAudioPort creates a new UDP audio port. You should only
+    need one of these in your client.
+
+    Pass an existing @param audioService which will take care of task execution.
+
+    @param port is the UDP port number you want to use. If you pass 0, an ephemeral port will
+    be taken and is the recommended usage. You can also set a fixed port and vatlib will
+    try to bind to it.
+
+    @return Upon success Vat_CreateUDPAudioPort() returns a valid pointer to a
+    VatUDPAudioPort object. If something went wrong (e.g. the fixed port is already taken)
+    a NULL pointer will be returned and must be handeled by the calling application.
  */
 VATLIB_API VatUDPAudioPort Vat_CreateUDPAudioPort(VatAudioService audioService, int port);
 
@@ -2554,15 +2826,22 @@ VATLIB_API VatUDPAudioPort Vat_CreateUDPAudioPort(VatAudioService audioService, 
     Vat_DestroyUDPAudioPort
  *
     Deallocates a VVLUDPAudioPort object. Delete your port on cleanup.
- *
+
+    @param audioPort A valid VatUDPAudioPort object.
  */
 VATLIB_API void Vat_DestroyUDPAudioPort(VatUDPAudioPort audioPort);
 
 /**
     Vat_GetPortNumber
- *
-    This accessor returns the port number of the port object.
- *
+
+    @param audioPort A valid VatUDPAudioPort object.
+
+    @return This method returns the used port number. If a fixed port
+    was given in Vat_CreateUDPAudioPort() and the allocation was
+    successful, it will return the same port. If a ephemeral port
+    was taken, this method returns the actual UDP port.
+
+    @see Vat_CreateUDPAudioPort
  */
 VATLIB_API int Vat_GetPortNumber(VatUDPAudioPort udpAudioPort);
 
