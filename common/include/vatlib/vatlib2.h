@@ -41,7 +41,7 @@ extern "C" {
  Reason:
  Leading zeros changes the number to octal.
 */
-#define VAT_LIBVATLIB_VERION 904
+#define VAT_LIBVATLIB_VERSION 904
 
 /**
  * Retrieve the release number of the currently running Vatlib build,
