@@ -41,7 +41,7 @@ extern "C" {
  Reason:
  Leading zeros changes the number to octal.
 */
-#define VAT_LIBVATLIB_VERSION 904
+#define VAT_LIBVATLIB_VERSION 905
 
 /**
  * Retrieve the release number of the currently running Vatlib build,
@@ -345,50 +345,18 @@ VatTrackingCmd;
 */
 typedef struct
 {
-    /** Latitude in decimal degrees. Precision shall be minimum 5 fractional digits.
-    */
-    double latitude;
 
-    /** Longitude in decimal degrees. Precision shall be minimum 5 fractional digits.
-    */
-    double longitude;
-
-    /** True altitude in feet above MSL.
-    */
-    int altitudeTrue;
-
-    /** Pressure altitude in feet above MSL.
-    */
-    int altitudePressure;
-
-    /** Ground speed in knots.
-    */
-    int groundSpeed;
-
-    /** Heading in degrees, clockwise from true north, 0-359.
-    */
-    double heading;
-
-    /** Bank in degrees, positive = roll right.
-    */
-    double bank;
-
-    /** Pitch in degrees, positive = pitch up.
-    */
-    double pitch;
-
-    /** Transponder code. Valid values are between 0000-7777
-    */
-    int transponderCode;
-
-    /** Current transponder mode. Either standby, charlie or ident.
-    */
-    VatTransponderMode transponderMode;
-
-    /** Pilot rating. This is not yet used in VATSIM. So VATSIM expects every pilot
-     client to send vatPilotRatingStudent only.
-    */
-    VatPilotRating rating;
+    double latitude;        /**< Latitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
+    double longitude;       /**< Longitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
+    int altitudeTrue;       /**< True altitude in feet above MSL. */
+    int altitudePressure;   /**< Pressure altitude in feet above MSL. */
+    int groundSpeed;        /**< Ground speed in knots. */
+    double heading;         /**< Heading in degrees, clockwise from true north, 0-359. */
+    double bank;            /**< Bank in degrees, positive = roll right. */
+    double pitch;           /**< Pitch in degrees, positive = pitch up. */
+    int transponderCode;    /**< Transponder code. Valid values are between 0000-7777. */
+    VatTransponderMode transponderMode; /**< Current transponder mode. Either standby, charlie or ident. */
+    VatPilotRating rating;  /**< Pilot rating. This is not yet used in VATSIM. So VATSIM expects every pilot client to send vatPilotRatingStudent only. */
 }
 VatPilotPosition;
 
@@ -396,29 +364,13 @@ VatPilotPosition;
 */
 typedef struct
 {
-    /** Latitude in decimal degrees. Precision shall be minimum 5 fractional digits.
-    */
-    double latitude;
 
-    /** Longitude in decimal degrees. Precision shall be minimum 5 fractional digits.
-    */
-    double longitude;
-
-    /** True altitude in feet above MSL.
-    */
-    int altitudeTrue;
-
-    /** Heading in degrees, clockwise from true north, 0-359.
-    */
-    double heading;
-
-    /** Bank in degrees, positive = roll right.
-    */
-    double bank;
-
-    /** Pitch in degrees, positive = pitch up.
-    */
-    double pitch;
+    double latitude;    /**< Latitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
+    double longitude;   /**< Longitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
+    int altitudeTrue;   /**< True altitude in feet above MSL. */
+    double heading;     /**< Heading in degrees, clockwise from true north, 0-359. */
+    double bank;        /**< Bank in degrees, positive = roll right. */
+    double pitch;       /**< Pitch in degrees, positive = pitch up. */
 }
 VatInterimPilotPosition;
 
@@ -427,32 +379,13 @@ VatInterimPilotPosition;
 */
 typedef struct
 {
-    /** ATC frequency in khz.
-    */
-    int frequency;
-
-    /** Facility type
-    */
-    VatFacilityType facility;
-
-    /** Visible range in nm
-    */
-    int visibleRange;
-
-    /** ATC rating
-    */
-    VatAtcRating rating;
-
-    /** Latitude in decimal degrees. Precision shall be minimum 5 fractional digits.
-    */
-    double latitude;
-
-    /** Longitude in decimal degrees. Precision shall be minimum 5 fractional digits.
-    */
-    double longitude;
-
-    /**< Elevation AGL in feet. */
-    int elevation;
+    int frequency;              /**< ATC frequency in khz. */
+    VatFacilityType facility;   /**< Facility type */
+    int visibleRange;           /**< Visible range in nm */
+    VatAtcRating rating;        /**< ATC rating */
+    double latitude;            /**< Latitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
+    double longitude;           /**< Longitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
+    int elevation;              /**< Elevation AGL in feet. */
 }
 VatAtcPosition;
 
@@ -461,23 +394,13 @@ VatAtcPosition;
 */
 typedef struct
 {
-    /** Pilots callsign.
-    */
-    const char *callsign;
-
-    /** Pilots real name.
-    */
-    const char *name;
-
-    /** Simulator type.
-    */
-    VatSimType simType;
-
-    /** Pilot rating. This is not yet used in VATSIM. So VATSIM expects every pilot
-     client to send vatPilotRatingStudent only. This must also be consistent with what is
-     sent in @see VatPilotPosition.
-    */
-    VatPilotRating rating;
+    const char *callsign;       /**< Pilots callsign. */
+    const char *name;           /**< Pilots real name. */
+    VatSimType simType;         /**< Simulator type. */
+    VatPilotRating rating;      /**< Pilot rating. This is not yet used in VATSIM. So VATSIM expects every pilot
+                                     client to send vatPilotRatingStudent only. This must also be consistent with what is
+                                     sent in @see VatPilotPosition.
+                                 */
 }
 VatPilotConnection;
 
@@ -485,18 +408,11 @@ VatPilotConnection;
 */
 typedef struct
 {
-    /** Controllers callsign
-    */
-    const char *callsign;
-
-    /** Controllers real name
-    */
-    const char *name;
-
-    /** Controller rating. This must also be consistent with what is
-     sent in @see VatAtcPosition.
-    */
-    VatAtcRating rating;
+    const char *callsign;   /** Controllers callsign */
+    const char *name;       /** Controllers real name */
+    VatAtcRating rating;    /** Controller rating. This must also be consistent with what is
+                                sent in @see VatAtcPosition.
+                            */
 }
 VatAtcConnection;
 
@@ -2891,9 +2807,20 @@ VATLIB_API int Vat_GetPortNumber(VatUDPAudioPort udpAudioPort);
     an output-only local codec, for example, "speakers".
  *
  */
-VATLIB_API VatLocalInputCodec Vat_CreateLocalInputCodec(VatAudioService audioService);
 
-VATLIB_API VatLocalOutputCodec Vat_CreateLocalOutputCodec(VatAudioService audioService);
+/** Audio codec
+*/
+typedef enum
+{
+    vatCodecLegacy  = (1 << 0), /**< Legacy codec */
+    vatCodecOpus    = (1 << 1), /**< Opus codec */
+}
+VatAudioCodec;
+
+
+VATLIB_API VatLocalInputCodec Vat_CreateLocalInputCodec(VatAudioService audioService, VatAudioCodec codec);
+
+VATLIB_API VatLocalOutputCodec Vat_CreateLocalOutputCodec(VatAudioService audioService, VatAudioCodec codec);
 
 /**
     Vat_DestroyLocalCodec
