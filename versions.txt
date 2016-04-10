@@ -1,0 +1,13 @@
+Library			|	Version
+---------------------------
+Boost			|	1.60.0
+DirectInput		|	8
+FSUIPC			|	???
+libpng			|	1.6.12
+openssl			|	1.0.2e
+Opus 			|	1.1.2
+Portaudio		|	r1967M
+SimConnect		|	???
+SpeexDSP		|	1.2rc3
+vatlib			|	0.9.5
+zlib			|	1.2.8
