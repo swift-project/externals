@@ -41,7 +41,7 @@ extern "C" {
  Reason:
  Leading zeros changes the number to octal.
 */
-#define VAT_LIBVATLIB_VERSION 905
+#define VAT_LIBVATLIB_VERSION 906
 
 /**
  * Retrieve the release number of the currently running Vatlib build,
@@ -136,14 +136,57 @@ VatConnectionStatus;
 */
 typedef enum
 {
-    vatCapsNone             = (1 << 0), /** None */
-    vatCapsAtcInfo          = (1 << 1), /** Can accept ATIS responses */
-    vatCapsSecondaryPos     = (1 << 2), /** Can send/receive secondary visibility center points (ATC/Server only) */
-    vatCapsModelDesc        = (1 << 3), /** Can send/receive modern model packets */
-    vatCapsOngoingCoord     = (1 << 4), /** Can send/receive inter-facility coordination packets (ATC only) */
-    vatCapsInterminPos      = (1 << 5), /** Can send/receive high-speed position updates (pilot only) */
-    vatCapsStealth          = (1 << 6), /** Stealth mode */
-    vatCapsAircraftConfig   = (1 << 7)  /** Aircraft Config */
+    /** None */
+    vatCapsNone             = (1 << 0),
+
+    /**
+     * Can accept ATIS responses
+     */
+    vatCapsAtcInfo          = (1 << 1),
+
+    /**
+     * Can send/receive secondary visibility center points (ATC/Server only)
+     */
+    vatCapsSecondaryPos     = (1 << 2),
+
+    /**
+     * Can send/receive modern model packets.
+     *
+     * This should be the standard for any new pilot client. Also all older VATSIM clients
+     * starting from SB3 do support this capability.
+     * Aircraft info contains
+     * \li Aircraft ICAO identifier
+     * \li Airline ICAO identifier (optional)
+     * \li Airline livery (optional)
+     */
+    vatCapsAircraftInfo     = (1 << 3),
+
+    /**
+     * Can send/receive inter-facility coordination packets (ATC only)
+     */
+    vatCapsOngoingCoord     = (1 << 4),
+
+    /**
+     * Can send/receive Interim position updates (pilot only)
+     * \deprecated Used only by Squawkbox with high precision errors. Use
+     * vatCapsFastPos instead.
+     */
+    vatCapsInterminPos      = (1 << 5),
+
+    /**
+     * Can send/receive fast position updates (pilot only)
+     */
+    vatCapsFastPos          = (1 << 6),
+
+    /**
+     * Stealth mode
+     */
+    vatCapsStealth          = (1 << 7),
+
+    /**
+     * Aircraft Config
+     */
+    vatCapsAircraftConfig   = (1 << 8)
 }
 VatCapabilities;
 
@@ -345,7 +388,6 @@ VatTrackingCmd;
 */
 typedef struct
 {
-
     double latitude;        /**< Latitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
     double longitude;       /**< Longitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
     int altitudeTrue;       /**< True altitude in feet above MSL. */
@@ -364,10 +406,10 @@ VatPilotPosition;
 */
 typedef struct
 {
-
     double latitude;    /**< Latitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
     double longitude;   /**< Longitude in decimal degrees. Precision shall be minimum 5 fractional digits. */
     int altitudeTrue;   /**< True altitude in feet above MSL. */
+    int groundSpeed;    /**< Ground speed in knots. */
     double heading;     /**< Heading in degrees, clockwise from true north, 0-359. */
     double bank;        /**< Bank in degrees, positive = roll right. */
     double pitch;       /**< Pitch in degrees, positive = pitch up. */
@@ -996,7 +1038,7 @@ typedef void (* VatCustomPilotPacketHandler_f)(
  @param session Session pointer.
  @param sender Callsign of the sending client
  @param ref User defined data.
- @see Vat_SendModernPlaneInfo
+ @see Vat_SendAircraftInfo
 */
 typedef void (* VatAircraftInfoRequestHandler_f)(
     VatSessionID session,
@@ -1216,6 +1258,17 @@ typedef void (* VatHelpCommandHandler_f)(
     VatSessionID session,
     const char *sender,
     bool wantsHelp,
+    const char *message,
+    void *ref);
+
+/**
+ Functions of type VatFsdMessageHandler_f can be implemented by any client.
+ @param session Session pointer.
+ @param message Raw FSD message
+ @param ref User defined data.
+*/
+typedef void (* VatFsdMessageHandler_f)(
+    VatSessionID session,
     const char *message,
     void *ref);
 
@@ -1799,6 +1852,29 @@ VATLIB_API void Vat_SetServerErrorHandler(
     VatServerErrorHandler_f handler,
     void *ref);
 
+/**
+ Installs the FsdMessageHandler callback.
+ @param session The session the callback should be installed to.
+ @param handler Pass a function pointer to install or nullptr to delete it.
+ @param ref Pointer to user defined data, which will be passed to the callback
+ @warning Your callback must be thread safe, because it is not guaranteed that
+ the callback is always called from the main thread.
+ @see VatFsdMessageHandler_f
+*/
+VATLIB_API void Vat_SetFsdMessageHandler(
+    VatSessionID session,
+    VatFsdMessageHandler_f handler,
+    void *ref);
+
+/**
+ Dump all raw FSD messages to file.
+ @param session The session the callback should be installed to.
+ @param FilePath can be a filename, relative or absolute path. If filePath is nullptr, dumping is stopped.
+*/
+VATLIB_API void Vat_DumpFsdMessageToFile(
+        VatSessionID session,
+        const char *filePath);
+
 /** Execute all pending network tasks synchronous. Call this method
  regularly to keep vatlib busy. This method will actually trigger most of the callbacks.
 */
@@ -2308,7 +2384,7 @@ VATLIB_API void Vat_SendFlightPlan(
  @return None
  @deprecated Do not use this method anymore. This legacy is just
  here for SB2.3 clients. Most should use the modern one.
- @see Vat_SendModernPlaneInfo
+ @see Vat_SendAircraftInfo
 */
 VATLIB_API void Vat_SendLegacyPlaneInfo(
     VatSessionID session,
@@ -2325,7 +2401,7 @@ VATLIB_API void Vat_SendLegacyPlaneInfo(
  @param info Struct with plane information
  @return None
 */
-VATLIB_API void Vat_SendModernPlaneInfo(
+VATLIB_API void Vat_SendAircraftInfo(
     VatSessionID session,
     const char *receiver,
     const VatAircraftInfo *info);
