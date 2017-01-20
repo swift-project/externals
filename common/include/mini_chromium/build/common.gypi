@@ -29,24 +29,24 @@
       ['OS=="mac"', {
         'xcode_settings': {
           'ALWAYS_SEARCH_USER_PATHS': 'NO',
-          'GCC_C_LANGUAGE_STANDARD': 'c99',         # -std=c99
-          'GCC_CW_ASM_SYNTAX': 'NO',                # No -fasm-blocks
-          'GCC_DYNAMIC_NO_PIC': 'NO',               # No -mdynamic-no-pic
-          'GCC_ENABLE_CPP_EXCEPTIONS': 'NO',        # -fno-exceptions
-          'GCC_ENABLE_CPP_RTTI': 'NO',              # -fno-rtti
-          'GCC_ENABLE_PASCAL_STRINGS': 'NO',        # No -mpascal-strings
+          'GCC_C_LANGUAGE_STANDARD': 'c99',  # -std=c99
+          'GCC_CW_ASM_SYNTAX': 'NO',  # No -fasm-blocks
+          'GCC_DYNAMIC_NO_PIC': 'NO',  # No -mdynamic-no-pic
+          'GCC_ENABLE_CPP_EXCEPTIONS': 'NO',  # -fno-exceptions
+          'GCC_ENABLE_CPP_RTTI': 'NO',  # -fno-rtti
+          'GCC_ENABLE_PASCAL_STRINGS': 'NO',  # No -mpascal-strings
 
           # GCC_INLINES_ARE_PRIVATE_EXTERN maps to -fvisibility-inlines-hidden
           'GCC_INLINES_ARE_PRIVATE_EXTERN': 'YES',
 
-          'GCC_OBJC_CALL_CXX_CDTORS': 'YES',        # -fobjc-call-cxx-cdtors
+          'GCC_OBJC_CALL_CXX_CDTORS': 'YES',  # -fobjc-call-cxx-cdtors
           'GCC_PRECOMPILE_PREFIX_HEADER': 'NO',
-          'GCC_SYMBOLS_PRIVATE_EXTERN': 'YES',      # -fvisibility=hidden
-          'GCC_THREADSAFE_STATICS': 'NO',           # -fno-threadsafe-statics
-          'GCC_TREAT_WARNINGS_AS_ERRORS': 'YES',    # -Werror
+          'GCC_SYMBOLS_PRIVATE_EXTERN': 'YES',  # -fvisibility=hidden
+          'GCC_THREADSAFE_STATICS': 'NO',  # -fno-threadsafe-statics
+          'GCC_TREAT_WARNINGS_AS_ERRORS': 'YES',  # -Werror
           'GCC_WARN_ABOUT_MISSING_NEWLINE': 'YES',  # -Wnewline-eof
           'OTHER_CFLAGS': [
-            '-fno-strict-aliasing',   # See http://crbug.com/32204
+            '-fno-strict-aliasing',  # See http://crbug.com/32204
             '-fstack-protector-all',  # Implies -fstack-protector
           ],
           'USE_HEADERMAP': 'NO',
@@ -68,7 +68,7 @@
               'CLANG_CXX_LANGUAGE_STANDARD': 'c++11',  # -std=c++11
 
               # Don't link in libarclite_macosx.a, see http://crbug.com/156530.
-              'CLANG_LINK_OBJC_RUNTIME': 'NO',      # -fno-objc-link-runtime
+              'CLANG_LINK_OBJC_RUNTIME': 'NO',  # No -fobjc-link-runtime
 
               # CLANG_WARN_OBJC_MISSING_PROPERTY_SYNTHESIS maps to
               # -Wobjc-missing-property-synthesis
@@ -118,11 +118,11 @@
         },
       }],
 
-      ['OS=="linux"', {
+      ['OS=="linux" or OS=="android"', {
         'cflags': [
           '-fPIC',
           '-fno-exceptions',
-          '-fno-strict-aliasing',   # See http://crbug.com/32204
+          '-fno-strict-aliasing',  # See http://crbug.com/32204
           '-fstack-protector-all',  # Implies -fstack-protector
           '-fvisibility=hidden',
           '-g',
@@ -159,8 +159,20 @@
               '-Wstring-conversion',
             ],
           }, {  # else: clang==0
-            'cflags': [
-              '-mfpmath=sse',
+            'conditions': [
+              ['target_arch=="ia32"', {
+                'cflags': [
+                  '-mfpmath=sse',
+                ],
+              }],
+            ],
+          }],
+        ],
+
+        'target_conditions': [
+          ['_type=="executable"', {
+            'ldflags': [
+              '-pie',
             ],
           }],
         ],
@@ -204,31 +216,6 @@
           'NOMINMAX',
           'WIN32_LEAN_AND_MEAN',
         ],
-        'conditions': [
-          ['target_arch=="ia32"', {
-            'msvs_settings': {
-              'VCLibrarianTool': {
-                'TargetMachine': '1',  # x86.
-              },
-              'VCLinkerTool': {
-                'MinimumRequiredVersion': '5.01',  # XP.
-                'TargetMachine': '1',  # x86.
-              },
-            },
-          }],
-          ['target_arch=="x64"', {
-            'msvs_configuration_platform': 'x64',
-            'msvs_settings': {
-              'VCLibrarianTool': {
-                'TargetMachine': '17',  # x64.
-              },
-              'VCLinkerTool': {
-                'MinimumRequiredVersion': '5.02',  # Server 2003.
-                'TargetMachine': '17',  # x64.
-              },
-            },
-          }],
-        ],
       }],
 
     ],
@@ -260,7 +247,7 @@
             },
           }],
 
-          ['OS=="linux"', {
+          ['OS=="linux" or OS=="android"', {
             'cflags': [
               '-O3',
               '-fdata-sections',
@@ -282,13 +269,21 @@
           }],
 
           ['OS=="win"', {
+            'msvs_configuration_platform': 'Win32',
             'msvs_settings': {
               'VCCLCompilerTool': {
-                'RuntimeLibrary': '2',  # /MT.
+                'RuntimeLibrary': '0',  # /MT.
                 'Optimization': '3',
                 'AdditionalOptions': [
                   '/Zo',  # Improve debugging optimized builds.
                 ],
+              },
+              'VCLibrarianTool': {
+                'TargetMachine': '1',  # x86.
+              },
+              'VCLinkerTool': {
+                'MinimumRequiredVersion': '5.01',  # XP.
+                'TargetMachine': '1',  # x86.
               },
             },
           }],
@@ -306,17 +301,25 @@
             },
           }],
 
-          ['OS=="linux"', {
+          ['OS=="linux" or OS=="android"', {
             'cflags': [
               '-O0',
             ],
           }],
 
           ['OS=="win"', {
+            'msvs_configuration_platform': 'Win32',
             'msvs_settings': {
               'VCCLCompilerTool': {
-                'RuntimeLibrary': '3',  # /MTd.
+                'RuntimeLibrary': '1',  # /MTd.
                 'Optimization': '0',
+              },
+              'VCLibrarianTool': {
+                'TargetMachine': '1',  # x86.
+              },
+              'VCLinkerTool': {
+                'MinimumRequiredVersion': '5.01',  # XP.
+                'TargetMachine': '1',  # x86.
               },
             },
             'defines': [
@@ -330,13 +333,33 @@
 
       'conditions': [
         ['OS=="win"', {
-          # gyp-ninja seems to requires these, but we don't use them.
+          # gyp-ninja seems to require these, but we don't use them.
           'Debug_x64': {
             'inherit_from': ['Debug'],
+            'msvs_configuration_platform': 'x64',
+            'msvs_settings': {
+              'VCLibrarianTool': {
+                'TargetMachine': '17',  # x64.
+              },
+              'VCLinkerTool': {
+                'MinimumRequiredVersion': '5.02',  # Server 2003.
+                'TargetMachine': '17',  # x64.
+              },
+            },
           },
           'Release_x64': {
             'inherit_from': ['Release'],
-          },
+            'msvs_configuration_platform': 'x64',
+            'msvs_settings': {
+              'VCLibrarianTool': {
+                'TargetMachine': '17',  # x64.
+              },
+              'VCLinkerTool': {
+                'MinimumRequiredVersion': '5.02',  # Server 2003.
+                'TargetMachine': '17',  # x64.
+              },
+            },
+          }
         }],
       ],
     },

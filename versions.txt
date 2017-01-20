@@ -1,7 +1,7 @@
 Library			|	Version
 ---------------------------
 Boost			|	1.63.0
-crashpad		|	26c9d3fa6d9ba5ef3ed1e98ed621cb36932f5d0b
+crashpad		|	f9b3a18f3f44a775689f42d5aec77fe97bc79108
 DirectInput		|	8
 FSUIPC			|	???
 libpng			|	1.6.12
