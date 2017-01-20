@@ -5,8 +5,8 @@ crashpad		|	f9b3a18f3f44a775689f42d5aec77fe97bc79108
 DirectInput		|	8
 FSUIPC			|	???
 libpng			|	1.6.28
-openssl			|	1.0.2e
-Opus 			|	1.2-alpha
+openssl			|	1.0.2j
+Opus			|	1.2-alpha
 Portaudio		|	19.6.0
 SimConnect		|	???
 SpeexDSP		|	1.2rc3
