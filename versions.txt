@@ -11,4 +11,4 @@ Portaudio		|	19.6.0
 SimConnect		|	???
 SpeexDSP		|	1.2rc3
 vatlib			|	0.9.5
-zlib			|	1.2.8
+zlib			|	1.2.11
