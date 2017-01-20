@@ -4,7 +4,7 @@ Boost			|	1.63.0
 crashpad		|	f9b3a18f3f44a775689f42d5aec77fe97bc79108
 DirectInput		|	8
 FSUIPC			|	???
-libpng			|	1.6.12
+libpng			|	1.6.28
 openssl			|	1.0.2e
 Opus 			|	1.2-alpha
 Portaudio		|	19.6.0
