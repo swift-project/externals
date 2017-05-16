@@ -1,6 +1,6 @@
 Library			|	Version
 ---------------------------
-Boost			|	1.63.0
+Boost			|	1.64.0
 crashpad		|	f9b3a18f3f44a775689f42d5aec77fe97bc79108
 DirectInput		|	8
 FSUIPC			|	???
