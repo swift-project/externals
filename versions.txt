@@ -1,14 +1,14 @@
 Library			|	Version
 ---------------------------
-Boost			|	1.64.0
+Boost			|	1.65.1
 crashpad		|	f9b3a18f3f44a775689f42d5aec77fe97bc79108
 DirectInput		|	8
 FSUIPC			|	???
 libpng			|	1.6.28
 openssl			|	1.0.2j
-Opus			|	1.2-alpha
+Opus			|	1.2.1
 Portaudio		|	19.6.0
 SimConnect		|	???
 SpeexDSP		|	1.2rc3
-vatlib			|	0.9.5
+vatlib			|	0.9.7
 zlib			|	1.2.11
