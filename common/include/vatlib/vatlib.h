@@ -41,7 +41,7 @@ extern "C" {
  Reason:
  Leading zeros changes the number to octal.
 */
-#define VAT_LIBVATLIB_VERSION 907
+#define VAT_LIBVATLIB_VERSION 908
 
 /*!
  Retrieve the release number of the currently running vatlib build.
@@ -389,6 +389,7 @@ typedef struct
     double heading;         /*!< Heading in degrees, clockwise from true north, 0-359. */
     double bank;            /*!< Bank in degrees, positive = roll right. */
     double pitch;           /*!< Pitch in degrees, positive = pitch up. */
+    bool onGround;          /*!< True if aircraft is on ground, false otherwise. */
     int transponderCode;    /*!< Transponder code. Valid values are between 0000-7777. */
     VatTransponderMode transponderMode; /*!< Current transponder mode. Either standby, charlie or ident. */
     VatPilotRating rating;  /*!< Pilot rating. This is not yet used in VATSIM.
@@ -406,6 +407,7 @@ typedef struct
     double heading;     /*!< Heading in degrees, clockwise from true north, 0-359. */
     double bank;        /*!< Bank in degrees, positive = roll right. */
     double pitch;       /*!< Pitch in degrees, positive = pitch up. */
+    bool onGround;      /*!< True if aircraft is on ground, false otherwise. */
 }
 VatInterimPilotPosition;
 
@@ -516,10 +518,10 @@ VatFlightPlan;
 */
 typedef struct
 {
-    const char *voiceRoom;  /*!< Controller voice room in the form url/room. */
-    const char **textLines; /*!< Controller messages lines. Maximum 4. */
-    int textLineCount;      /*!< Number of message lines. */
-    const char *zuluLogoff; /*!< Controllers planned logoff time, e.g 20:00 UTC. */
+    const char *voiceRoom;      /*!< Controller voice room in the form url/room. */
+    const char **textLines;     /*!< Controller messages lines. Maximum 4. */
+    unsigned int textLineCount; /*!< Number of message lines. */
+    const char *zuluLogoff;     /*!< Controllers planned logoff time, e.g 20:00 UTC. */
 }
 VatControllerAtis;
 
@@ -619,7 +621,7 @@ typedef void (* VatTextMessageHandler_f)(
 typedef void (* VatRadioMessageHandler_f)(
     VatFsdClient *fsdClient,
     const char *sender,
-    int freqCount,
+    unsigned int freqCount,
     int *freqList,
     const char *message,
     void *ref);
@@ -2047,7 +2049,7 @@ VATLIB_API void Vat_SendTextMessage(
 VATLIB_API void Vat_SendRadioMessage(
     VatFsdClient *fsdClient,
     int *frequencies,
-    int freqCount,
+    unsigned int freqCount,
     const char *message);
 
 /*!
@@ -2823,7 +2825,7 @@ typedef void (* VatLocalCodecHardwareIterator_f)(
 typedef enum
 {
     vatCodecLegacy  = (1 << 0), /*!< Legacy codec */
-    vatCodecOpus    = (1 << 1), /*!< Opus codec */
+//    vatCodecOpus    = (1 << 1), /*!< Opus codec */
 }
 VatAudioCodec;
 
