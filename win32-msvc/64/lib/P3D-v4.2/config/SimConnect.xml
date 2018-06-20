@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<SimBase.Document Type="SimConnect" version="1,0">
+  <Descr>SimConnect Server Configuration</Descr>
+  <Filename>SimConnect.xml</Filename>
+  <Disabled>False</Disabled>
+
+  <!-- Example Global (remote) Pipe Server Configuration-->
+  <SimConnect.Comm>
+    <Disabled>True</Disabled>
+    <Protocol>Pipe</Protocol>
+    <Scope>global</Scope>
+    <MaxClients>64</MaxClients>
+    <Port>REPLACE_WITH_PORT_NAME</Port>
+  </SimConnect.Comm>
+
+  <!-- Example Global (remote) IPv6 Server Configuration-->
+  <SimConnect.Comm>
+    <Disabled>True</Disabled>
+    <Protocol>IPv6</Protocol>
+    <Scope>global</Scope>
+    <MaxClients>64</MaxClients>
+    <Address>::</Address>
+    <Port>REPLACE_WITH_PORT_NUMBER</Port>
+  </SimConnect.Comm>
+
+  <!-- Example Global (remote) IPv4 Server Configuration-->
+  <SimConnect.Comm>
+    <Disabled>True</Disabled>
+    <Protocol>IPv4</Protocol>
+    <Scope>global</Scope>
+    <MaxClients>64</MaxClients>
+    <Address>0.0.0.0</Address>
+    <Port>REPLACE_WITH_PORT_NUMBER</Port>
+  </SimConnect.Comm>
+
+  <!-- Example Local Pipe Server Configuration-->
+  <SimConnect.Comm>
+    <Disabled>True</Disabled>
+    <Protocol>Pipe</Protocol>
+    <Scope>local</Scope>
+    <MaxClients>64</MaxClients>
+    <Port>REPLACE_WITH_PORT_NAME</Port>
+  </SimConnect.Comm>
+
+  <!-- Example Local IPv6 Server Configuration-->
+  <SimConnect.Comm>
+    <Disabled>True</Disabled>
+    <Protocol>IPv6</Protocol>
+    <Scope>local</Scope>
+    <MaxClients>64</MaxClients>
+    <Address>::1</Address>
+    <Port>REPLACE_WITH_PORT_NUMBER</Port>
+  </SimConnect.Comm>
+
+  <!-- Example Local IPv4 Server Configuration-->
+  <SimConnect.Comm>
+    <Disabled>True</Disabled>
+    <Protocol>IPv4</Protocol>
+    <Scope>local</Scope>
+    <MaxClients>64</MaxClients>
+    <Address>127.0.0.1</Address>
+    <Port>REPLACE_WITH_PORT_NUMBER</Port>
+  </SimConnect.Comm>
+
+</SimBase.Document>
