@@ -73,13 +73,13 @@ VATLIB_API const char *Vat_GetBuildInfo();
 */
 typedef enum
 {
-    SeverityNone,       /*!< Severity None. Nothing is logged. */
-    SeverityError,      /*!< Severity Error. Only errors are logged. */
-    SeverityWarning,    /*!< Severity Warning. Warning and higher is logged. */
-    SeverityInfo,       /*!< Severity Info. Info and higher is is logged. */
-    SeverityDebug       /*!< Severity Debug. Debug and higher is logged. */
+    vatSeverityNone,       /*!< Severity None. Nothing is logged. */
+    vatSeverityError,      /*!< Severity Error. Only errors are logged. */
+    vatSeverityWarning,    /*!< Severity Warning. Warning and higher is logged. */
+    vatSeverityInfo,       /*!< Severity Info. Info and higher is is logged. */
+    vatSeverityDebug       /*!< Severity Debug. Debug and higher is logged. */
 }
-SeverityLevel;
+VatSeverityLevel;
 
 /*!
  Log handler callback. A function of this signature is called by vatlib when a message is logged.
@@ -87,10 +87,10 @@ SeverityLevel;
  \param level The log message severity.
  \param context Description of the executed function in which the log message was generated
  \param message The message logged by vatlib.
- \see SeverityLevel
+ \see VatSeverityLevel
  */
 typedef void (* VatlibLogHandler_t)(
-    SeverityLevel level,
+    VatSeverityLevel level,
     const char *context,
     const char *message
     );
@@ -1300,7 +1300,7 @@ typedef void (* VatSharedStateDIHandler_f)(
  \see VatlibLogHandler_t
 */
 VATLIB_API void Vat_SetNetworkLogHandler(
-    SeverityLevel maximumSeverityLevel,
+    VatSeverityLevel maximumSeverityLevel,
     VatlibLogHandler_t handler);
 
 /*!
@@ -1308,7 +1308,7 @@ VATLIB_API void Vat_SetNetworkLogHandler(
  \param maximumSeverityLevel Maximum severity level
 */
 VATLIB_API void Vat_SetNetworkLogSeverityLevel(
-    SeverityLevel maximumSeverityLevel);
+    VatSeverityLevel maximumSeverityLevel);
 
 /*!
  Installs the StateChangeHandler callback.
@@ -2556,7 +2556,7 @@ VATLIB_API void Vat_RequestWeather(
 
 */
 VATLIB_API void Vat_SetVoiceLogHandler(
-    SeverityLevel severityLevel,
+    VatSeverityLevel severityLevel,
     VatlibLogHandler_t handler);
 
 /*!
@@ -2564,7 +2564,7 @@ VATLIB_API void Vat_SetVoiceLogHandler(
  \param severityLevel Maximum severity level
 */
 VATLIB_API void Vat_SetVoiceLogSeverityLevel(
-    SeverityLevel severityLevel);
+    VatSeverityLevel severityLevel);
 
 /****************************************************************
  * Audio Service Routines
@@ -2940,38 +2940,6 @@ VATLIB_API int Vat_GetOutputVolume(
 */
 VATLIB_API bool Vat_IsRecordingAlive(
     VatLocalInputCodec *localCodec);
-
-/*!
- Get current input RMS level
- \param localCodec Local input instance
- \return Value in dB
-*/
-VATLIB_API double Vat_GetInputRmsLevel(
-    VatLocalInputCodec *localCodec);
-
-/*!
- Get current input peak level
- \param localCodec Local input instance
- \return Value in dB
-*/
-VATLIB_API double Vat_GetInputPeakLevel(
-    VatLocalInputCodec *localCodec);
-
-/*!
- Get current output RMS level
- \param localCodec Local output instance
- \return Value in range: -180 to 0 dB
-*/
-VATLIB_API double Vat_GetOutputRmsLevel(
-    VatLocalOutputCodec *localCodec);
-
-/*!
- Returns the current output Peak level
- \param localCodec Local output instance
- \return Value in range: -180 to 0 dB
-*/
-VATLIB_API double Vat_GetOutputPeakLevel(
-    VatLocalOutputCodec *localCodec);
 
 /*!
  Returns whether the hardware device is functioning for output.
