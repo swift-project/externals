@@ -9,11 +9,17 @@
 
 #pragma once
 
+#define P3D_SDK_V40 400
+#define P3D_SDK_V41 410
+#define P3D_SDK_V42 420
+#define P3D_SDK_V43 430
+
+#define P3D_SDK_VERSION 400
+
 #ifndef DWORD_MAX
 #define DWORD_MAX 0xFFFFFFFF
 #endif
 
-#include <windows.h>
 #include <float.h>
 
 typedef DWORD SIMCONNECT_OBJECT_ID;
@@ -99,7 +105,8 @@ static const DWORD SIMCONNECT_OPEN_CONFIGINDEX_LOCAL   = -1;   // ignore SimConn
 //----------------------------------------------------------------------------
 
 // Receive data types *ALWAYS ADD TO THE END OF THE ENUM*
-enum SIMCONNECT_RECV_ID {
+enum SIMCONNECT_RECV_ID
+{
     SIMCONNECT_RECV_ID_NULL,
     SIMCONNECT_RECV_ID_EXCEPTION,
     SIMCONNECT_RECV_ID_OPEN,
@@ -127,8 +134,7 @@ enum SIMCONNECT_RECV_ID {
     SIMCONNECT_RECV_ID_EVENT_MULTIPLAYER_SESSION_ENDED,
     SIMCONNECT_RECV_ID_EVENT_RACE_END,
     SIMCONNECT_RECV_ID_EVENT_RACE_LAP,
-	SIMCONNECT_RECV_ID_OBSERVER_DATA,
-
+    SIMCONNECT_RECV_ID_OBSERVER_DATA,
     SIMCONNECT_RECV_ID_GROUND_INFO,
     SIMCONNECT_RECV_ID_SYNCHRONOUS_BLOCK,
     SIMCONNECT_RECV_ID_EXTERNAL_SIM_CREATE,
@@ -148,11 +154,11 @@ enum SIMCONNECT_RECV_ID {
     SIMCONNECT_RECV_ID_CAMERA_SENSOR_MODE,
     SIMCONNECT_RECV_ID_CAMERA_WINDOW_POSITION,
     SIMCONNECT_RECV_ID_CAMERA_WINDOW_SIZE,
-	SIMCONNECT_RECV_ID_MISSION_OBJECT_COUNT,
+    SIMCONNECT_RECV_ID_MISSION_OBJECT_COUNT,
     SIMCONNECT_RECV_ID_GOAL,
     SIMCONNECT_RECV_ID_MISSION_OBJECTIVE,
     SIMCONNECT_RECV_ID_FLIGHT_SEGMENT,
-    SIMCONNECT_RECV_ID_PARAMETER_RANGE,	
+    SIMCONNECT_RECV_ID_PARAMETER_RANGE,
     SIMCONNECT_RECV_ID_FLIGHT_SEGMENT_READY_FOR_GRADING,
     SIMCONNECT_RECV_ID_GOAL_PAIR,
     SIMCONNECT_RECV_ID_EVENT_FLIGHT_ANALYSIS_DIAGRAMS,
@@ -169,12 +175,19 @@ enum SIMCONNECT_RECV_ID {
     SIMCONNECT_RECV_ID_MOBILE_SCENERY_IN_RADIUS,
     SIMCONNECT_RECV_ID_MOBILE_SCENERY_DATA,
     SIMCONNECT_RECV_ID_EVENT_64,
+#if P3D_SDK_VERSION >= P3D_SDK_V42
+    SIMCONNECT_RECV_ID_EVENT_TEXT,
+#endif
+#if P3D_SDK_VERSION >= P3D_SDK_V43
+    SIMCONNECT_RECV_ID_EVENT_TEXT_DESTROYED,
+#endif
 };
 
 
 
 // Data data types
-enum SIMCONNECT_DATATYPE {
+enum SIMCONNECT_DATATYPE
+{
     SIMCONNECT_DATATYPE_INVALID,        // invalid data type
 
     SIMCONNECT_DATATYPE_INT32,          // 32-bit integer number
@@ -212,7 +225,8 @@ enum SIMCONNECT_DATATYPE {
 };
 
 // Exception error types
-enum SIMCONNECT_EXCEPTION {
+enum SIMCONNECT_EXCEPTION
+{
     SIMCONNECT_EXCEPTION_NONE,
 
     SIMCONNECT_EXCEPTION_ERROR,
@@ -256,7 +270,8 @@ enum SIMCONNECT_EXCEPTION {
 };
 
 // Object types
-enum SIMCONNECT_SIMOBJECT_TYPE {
+enum SIMCONNECT_SIMOBJECT_TYPE
+{
     SIMCONNECT_SIMOBJECT_TYPE_USER,
     SIMCONNECT_SIMOBJECT_TYPE_ALL,
     SIMCONNECT_SIMOBJECT_TYPE_AIRPLANE,
@@ -264,17 +279,19 @@ enum SIMCONNECT_SIMOBJECT_TYPE {
     SIMCONNECT_SIMOBJECT_TYPE_HELICOPTER,
     SIMCONNECT_SIMOBJECT_TYPE_BOAT,
     SIMCONNECT_SIMOBJECT_TYPE_GROUND,
-	SIMCONNECT_SIMOBJECT_TYPE_WEAPON,
+    SIMCONNECT_SIMOBJECT_TYPE_WEAPON,
 };
 
 // EventState values
-enum SIMCONNECT_STATE {
+enum SIMCONNECT_STATE
+{
     SIMCONNECT_STATE_OFF,
     SIMCONNECT_STATE_ON,
 };
 
 // Object Data Request Period values
-enum SIMCONNECT_PERIOD {
+enum SIMCONNECT_PERIOD
+{
     SIMCONNECT_PERIOD_NEVER,
     SIMCONNECT_PERIOD_ONCE,
     SIMCONNECT_PERIOD_VISUAL_FRAME,
@@ -283,7 +300,8 @@ enum SIMCONNECT_PERIOD {
 };
 
 // ClientData Request Period values
-enum SIMCONNECT_CLIENT_DATA_PERIOD {
+enum SIMCONNECT_CLIENT_DATA_PERIOD
+{
     SIMCONNECT_CLIENT_DATA_PERIOD_NEVER,
     SIMCONNECT_CLIENT_DATA_PERIOD_ONCE,
     SIMCONNECT_CLIENT_DATA_PERIOD_VISUAL_FRAME,
@@ -291,13 +309,23 @@ enum SIMCONNECT_CLIENT_DATA_PERIOD {
     SIMCONNECT_CLIENT_DATA_PERIOD_SECOND,
 };
 
-enum SIMCONNECT_MISSION_END {
+enum SIMCONNECT_MISSION_END
+{
     SIMCONNECT_MISSION_FAILED,
     SIMCONNECT_MISSION_CRASHED,
     SIMCONNECT_MISSION_SUCCEEDED
 };
 
-enum SIMCONNECT_TEXT_TYPE {
+#if P3D_SDK_VERSION >= P3D_SDK_V42
+enum SIMCONNECT_TEXT_ORIGIN
+{
+    SIMCONNECT_TEXT_ORIGIN_APPLICATION,
+    SIMCONNECT_TEXT_ORIGIN_SIMCONNECT,
+};
+#endif
+
+enum SIMCONNECT_TEXT_TYPE
+{
     SIMCONNECT_TEXT_TYPE_SCROLL_BLACK,
     SIMCONNECT_TEXT_TYPE_SCROLL_WHITE,
     SIMCONNECT_TEXT_TYPE_SCROLL_RED,
@@ -318,7 +346,8 @@ enum SIMCONNECT_TEXT_TYPE {
     SIMCONNECT_TEXT_TYPE_MESSAGE_WINDOW = 0x0300,
 };
 
-enum SIMCONNECT_TEXT_RESULT {
+enum SIMCONNECT_TEXT_RESULT
+{
     SIMCONNECT_TEXT_RESULT_MENU_SELECT_1,
     SIMCONNECT_TEXT_RESULT_MENU_SELECT_2,
     SIMCONNECT_TEXT_RESULT_MENU_SELECT_3,
@@ -336,25 +365,28 @@ enum SIMCONNECT_TEXT_RESULT {
     SIMCONNECT_TEXT_RESULT_TIMEOUT,
 };
 
-enum SIMCONNECT_WEATHER_MODE {
+enum SIMCONNECT_WEATHER_MODE
+{
     SIMCONNECT_WEATHER_MODE_THEME,
     SIMCONNECT_WEATHER_MODE_RWW, // deprecated
     SIMCONNECT_WEATHER_MODE_CUSTOM,
     SIMCONNECT_WEATHER_MODE_GLOBAL,
 };
 
-enum SIMCONNECT_FACILITY_LIST_TYPE {
+enum SIMCONNECT_FACILITY_LIST_TYPE
+{
     SIMCONNECT_FACILITY_LIST_TYPE_AIRPORT,
     SIMCONNECT_FACILITY_LIST_TYPE_WAYPOINT,
     SIMCONNECT_FACILITY_LIST_TYPE_NDB,
     SIMCONNECT_FACILITY_LIST_TYPE_VOR,
     SIMCONNECT_FACILITY_LIST_TYPE_TACAN,
-    SIMCONNECT_FACILITY_LIST_TYPE_COUNT // invalid 
+    SIMCONNECT_FACILITY_LIST_TYPE_COUNT // invalid
 };
 
 // Camera types
-enum SIMCONNECT_CAMERA_TYPE {
-	SIMCONNECT_CAMERA_TYPE_OBJECT_PANEL,
+enum SIMCONNECT_CAMERA_TYPE
+{
+    SIMCONNECT_CAMERA_TYPE_OBJECT_PANEL,
     SIMCONNECT_CAMERA_TYPE_OBJECT_VIRTUAL,
     SIMCONNECT_CAMERA_TYPE_OBJECT_CENTER,
     SIMCONNECT_CAMERA_TYPE_OBJECT_PILOT,
@@ -363,100 +395,107 @@ enum SIMCONNECT_CAMERA_TYPE {
     SIMCONNECT_CAMERA_TYPE_WORLD_OBJECT,
     SIMCONNECT_CAMERA_TYPE_LATLONALT_ORTHOGONAL,
     SIMCONNECT_CAMERA_TYPE_OBJECT_AI_VIRTUAL,
+#if P3D_SDK_VERSION >= P3D_SDK_V42
+    SIMCONNECT_CAMERA_TYPE_OBJECT_AI_CENTER,
+#endif
 };
 
 typedef DWORD SIMCONNECT_EVENT_SUBSCRIPTION_FLAG;
 
-    static const DWORD SIMCONNECT_EVENT_SUBSCRIPTION_FLAG_DEFAULT        = 0x00000000;
-    static const DWORD SIMCONNECT_EVENT_SUBSCRIPTION_FLAG_BLOCK          = 0x00000001;
+static const DWORD SIMCONNECT_EVENT_SUBSCRIPTION_FLAG_DEFAULT        = 0x00000000;
+static const DWORD SIMCONNECT_EVENT_SUBSCRIPTION_FLAG_BLOCK          = 0x00000001;
 
 
 
-typedef DWORD SIMCONNECT_VOR_FLAGS;            // flags for SIMCONNECT_RECV_ID_VOR_LIST 
+typedef DWORD SIMCONNECT_VOR_FLAGS;            // flags for SIMCONNECT_RECV_ID_VOR_LIST
 
-    static const DWORD SIMCONNECT_RECV_ID_VOR_LIST_HAS_NAV_SIGNAL  = 0x00000001;   // Has Nav signal
-    static const DWORD SIMCONNECT_RECV_ID_VOR_LIST_HAS_LOCALIZER   = 0x00000002;   // Has localizer
-    static const DWORD SIMCONNECT_RECV_ID_VOR_LIST_HAS_GLIDE_SLOPE = 0x00000004;   // Has Nav signal
-    static const DWORD SIMCONNECT_RECV_ID_VOR_LIST_HAS_DME         = 0x00000008;   // Station has DME
+static const DWORD SIMCONNECT_RECV_ID_VOR_LIST_HAS_NAV_SIGNAL  = 0x00000001;   // Has Nav signal
+static const DWORD SIMCONNECT_RECV_ID_VOR_LIST_HAS_LOCALIZER   = 0x00000002;   // Has localizer
+static const DWORD SIMCONNECT_RECV_ID_VOR_LIST_HAS_GLIDE_SLOPE = 0x00000004;   // Has Nav signal
+static const DWORD SIMCONNECT_RECV_ID_VOR_LIST_HAS_DME         = 0x00000008;   // Station has DME
 
 
 
 // bits for the Waypoint Flags field: may be combined
 typedef DWORD SIMCONNECT_WAYPOINT_FLAGS;
 
-    static const DWORD SIMCONNECT_WAYPOINT_NONE                    = 0x00;
-    static const DWORD SIMCONNECT_WAYPOINT_SPEED_REQUESTED         = 0x04;    // requested speed at waypoint is valid
-    static const DWORD SIMCONNECT_WAYPOINT_THROTTLE_REQUESTED      = 0x08;    // request a specific throttle percentage
-    static const DWORD SIMCONNECT_WAYPOINT_COMPUTE_VERTICAL_SPEED  = 0x10;    // compute vertical to speed to reach waypoint altitude when crossing the waypoint
-    static const DWORD SIMCONNECT_WAYPOINT_ALTITUDE_IS_AGL         = 0x20;    // AltitudeIsAGL
-    static const DWORD SIMCONNECT_WAYPOINT_ON_GROUND               = 0x00100000;   // place this waypoint on the ground
-    static const DWORD SIMCONNECT_WAYPOINT_REVERSE                 = 0x00200000;   // Back up to this waypoint. Only valid on first waypoint
-    static const DWORD SIMCONNECT_WAYPOINT_WRAP_TO_FIRST           = 0x00400000;   // Wrap around back to first waypoint. Only valid on last waypoint.
+static const DWORD SIMCONNECT_WAYPOINT_NONE                    = 0x00;
+static const DWORD SIMCONNECT_WAYPOINT_SPEED_REQUESTED         = 0x04;    // requested speed at waypoint is valid
+// Looks like SIMCONNECT_WAYPOINT_THROTTLE_REQUESTED was deleted in v4.2 header but is still listed in the API doc. So maybe
+// It still works
+#if P3D_SDK_VERSION <= P3D_SDK_V41
+static const DWORD SIMCONNECT_WAYPOINT_THROTTLE_REQUESTED      = 0x08;    // request a specific throttle percentage
+#endif
+static const DWORD SIMCONNECT_WAYPOINT_COMPUTE_VERTICAL_SPEED  = 0x10;    // compute vertical to speed to reach waypoint altitude when crossing the waypoint
+static const DWORD SIMCONNECT_WAYPOINT_ALTITUDE_IS_AGL         = 0x20;    // AltitudeIsAGL
+static const DWORD SIMCONNECT_WAYPOINT_ON_GROUND               = 0x00100000;   // place this waypoint on the ground
+static const DWORD SIMCONNECT_WAYPOINT_REVERSE                 = 0x00200000;   // Back up to this waypoint. Only valid on first waypoint
+static const DWORD SIMCONNECT_WAYPOINT_WRAP_TO_FIRST           = 0x00400000;   // Wrap around back to first waypoint. Only valid on last waypoint.
 
 
 typedef DWORD SIMCONNECT_EVENT_FLAG;
 
-    static const DWORD SIMCONNECT_EVENT_FLAG_DEFAULT                  = 0x00000000;
-    static const DWORD SIMCONNECT_EVENT_FLAG_FAST_REPEAT_TIMER        = 0x00000001;      // set event repeat timer to simulate fast repeat
-    static const DWORD SIMCONNECT_EVENT_FLAG_SLOW_REPEAT_TIMER        = 0x00000002;      // set event repeat timer to simulate slow repeat
-    static const DWORD SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY      = 0x00000010;      // interpret GroupID parameter as priority value
+static const DWORD SIMCONNECT_EVENT_FLAG_DEFAULT                  = 0x00000000;
+static const DWORD SIMCONNECT_EVENT_FLAG_FAST_REPEAT_TIMER        = 0x00000001;      // set event repeat timer to simulate fast repeat
+static const DWORD SIMCONNECT_EVENT_FLAG_SLOW_REPEAT_TIMER        = 0x00000002;      // set event repeat timer to simulate slow repeat
+static const DWORD SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY      = 0x00000010;      // interpret GroupID parameter as priority value
 
 
 typedef DWORD SIMCONNECT_DATA_REQUEST_FLAG;
 
-    static const DWORD SIMCONNECT_DATA_REQUEST_FLAG_DEFAULT           = 0x00000000;
-    static const DWORD SIMCONNECT_DATA_REQUEST_FLAG_CHANGED           = 0x00000001;      // send requested data when value(s) change
-    static const DWORD SIMCONNECT_DATA_REQUEST_FLAG_TAGGED            = 0x00000002;      // send requested data in tagged format
-    static const DWORD SIMCONNECT_DATA_REQUEST_FLAG_BLOCK             = 0x00000004;      // Block server when data is sent
+static const DWORD SIMCONNECT_DATA_REQUEST_FLAG_DEFAULT           = 0x00000000;
+static const DWORD SIMCONNECT_DATA_REQUEST_FLAG_CHANGED           = 0x00000001;      // send requested data when value(s) change
+static const DWORD SIMCONNECT_DATA_REQUEST_FLAG_TAGGED            = 0x00000002;      // send requested data in tagged format
+static const DWORD SIMCONNECT_DATA_REQUEST_FLAG_BLOCK             = 0x00000004;      // Block server when data is sent
 
 
 typedef DWORD SIMCONNECT_DATA_SET_FLAG;
 
-    static const DWORD SIMCONNECT_DATA_SET_FLAG_DEFAULT               = 0x00000000;
-    static const DWORD SIMCONNECT_DATA_SET_FLAG_TAGGED                = 0x00000001;      // data is in tagged format
-    static const DWORD SIMCONNECT_DATA_SET_FLAG_UNBLOCK               = 0x00000002;      // Unblock server after data is set
+static const DWORD SIMCONNECT_DATA_SET_FLAG_DEFAULT               = 0x00000000;
+static const DWORD SIMCONNECT_DATA_SET_FLAG_TAGGED                = 0x00000001;      // data is in tagged format
+static const DWORD SIMCONNECT_DATA_SET_FLAG_UNBLOCK               = 0x00000002;      // Unblock server after data is set
 
 
 typedef DWORD SIMCONNECT_CREATE_CLIENT_DATA_FLAG;
 
-    static const DWORD SIMCONNECT_CREATE_CLIENT_DATA_FLAG_DEFAULT     = 0x00000000;
-    static const DWORD SIMCONNECT_CREATE_CLIENT_DATA_FLAG_READ_ONLY   = 0x00000001;      // permit only ClientData creator to write into ClientData
+static const DWORD SIMCONNECT_CREATE_CLIENT_DATA_FLAG_DEFAULT     = 0x00000000;
+static const DWORD SIMCONNECT_CREATE_CLIENT_DATA_FLAG_READ_ONLY   = 0x00000001;      // permit only ClientData creator to write into ClientData
 
 
 typedef DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG;
 
-    static const DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_DEFAULT    = 0x00000000;
-    static const DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_CHANGED    = 0x00000001;      // send requested ClientData when value(s) change
-    static const DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_TAGGED     = 0x00000002;      // send requested ClientData in tagged format
-    static const DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_BLOCK      = 0x00000004;      // Block server when data is sent
+static const DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_DEFAULT    = 0x00000000;
+static const DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_CHANGED    = 0x00000001;      // send requested ClientData when value(s) change
+static const DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_TAGGED     = 0x00000002;      // send requested ClientData in tagged format
+static const DWORD SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_BLOCK      = 0x00000004;      // Block server when data is sent
 
 
 typedef DWORD SIMCONNECT_CLIENT_DATA_SET_FLAG;
 
-    static const DWORD SIMCONNECT_CLIENT_DATA_SET_FLAG_DEFAULT        = 0x00000000;
-    static const DWORD SIMCONNECT_CLIENT_DATA_SET_FLAG_TAGGED         = 0x00000001;      // data is in tagged format
-    static const DWORD SIMCONNECT_CLIENT_DATA_SET_FLAG_UNBLOCK        = 0x00000002;
+static const DWORD SIMCONNECT_CLIENT_DATA_SET_FLAG_DEFAULT        = 0x00000000;
+static const DWORD SIMCONNECT_CLIENT_DATA_SET_FLAG_TAGGED         = 0x00000001;      // data is in tagged format
+static const DWORD SIMCONNECT_CLIENT_DATA_SET_FLAG_UNBLOCK        = 0x00000002;
 
 
 typedef DWORD SIMCONNECT_VIEW_SYSTEM_EVENT_DATA;                  // dwData contains these flags for the "View" System Event
 
-    static const DWORD SIMCONNECT_VIEW_SYSTEM_EVENT_DATA_COCKPIT_2D      = 0x00000001;      // 2D Panels in cockpit view
-    static const DWORD SIMCONNECT_VIEW_SYSTEM_EVENT_DATA_COCKPIT_VIRTUAL = 0x00000002;      // Virtual (3D) panels in cockpit view
-    static const DWORD SIMCONNECT_VIEW_SYSTEM_EVENT_DATA_ORTHOGONAL      = 0x00000004;      // Orthogonal (Map) view
+static const DWORD SIMCONNECT_VIEW_SYSTEM_EVENT_DATA_COCKPIT_2D      = 0x00000001;      // 2D Panels in cockpit view
+static const DWORD SIMCONNECT_VIEW_SYSTEM_EVENT_DATA_COCKPIT_VIRTUAL = 0x00000002;      // Virtual (3D) panels in cockpit view
+static const DWORD SIMCONNECT_VIEW_SYSTEM_EVENT_DATA_ORTHOGONAL      = 0x00000004;      // Orthogonal (Map) view
 
 
 typedef DWORD SIMCONNECT_SOUND_SYSTEM_EVENT_DATA;            // dwData contains these flags for the "Sound" System Event
 
-    static const DWORD SIMCONNECT_SOUND_SYSTEM_EVENT_DATA_MASTER    = 0x00000001;      // Sound Master
+static const DWORD SIMCONNECT_SOUND_SYSTEM_EVENT_DATA_MASTER    = 0x00000001;      // Sound Master
 
 
 typedef DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG;         // specifies which synchronous callbacks the external sim wants sent to it
 
-    static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_CREATE            = 0x00000001;
-    static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_DESTROY           = 0x00000002;
-    static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_SIMULATE          = 0x00000004;
-    static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_LOCATION_CHANGED  = 0x00000008;
-    static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_EVENT             = 0x00000010;
+static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_CREATE            = 0x00000001;
+static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_DESTROY           = 0x00000002;
+static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_SIMULATE          = 0x00000004;
+static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_LOCATION_CHANGED  = 0x00000008;
+static const DWORD SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG_EVENT             = 0x00000010;
 
 
 //
@@ -481,11 +520,11 @@ enum SIMCONNECT_GROUND_INFO_ALT_FORMAT
 // specify data sources to search through
 typedef DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG;
 
-    static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_TERRAIN      = 0x00010000;
-    static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_PLATFORMS    = 0x00020000;
-    static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_BATHYMETRY   = 0x00040000;
-    static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_IGNORE_WAVES = 0x00080000;
-    static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_TERRAIN_AVG  = SIMCONNECT_GROUND_INFO_SOURCE_FLAG_IGNORE_WAVES;
+static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_TERRAIN      = 0x00010000;
+static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_PLATFORMS    = 0x00020000;
+static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_BATHYMETRY   = 0x00040000;
+static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_IGNORE_WAVES = 0x00080000;
+static const DWORD SIMCONNECT_GROUND_INFO_SOURCE_FLAG_TERRAIN_AVG  = SIMCONNECT_GROUND_INFO_SOURCE_FLAG_IGNORE_WAVES;
 
 
 enum SIMCONNECT_CAMERA_SENSOR_MODE
@@ -526,20 +565,20 @@ enum SIMCONNECT_DYNAMIC_FREQUENCY
 
 typedef DWORD SIMCONNECT_SHADOW_FLAGS;
 
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_INTERIOR_CAST       = 0x00000001;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_INTERIOR_RECEIVE    = 0x00000002;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_EXTERIOR_CAST       = 0x00000004;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_EXTERIOR_RECEIVE    = 0x00000008;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_SIMOBJECTS_CAST     = 0x00000010;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_SIMOBJECTS_RECEIVE  = 0x00000020;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_TERRAIN_CAST        = 0x00000040;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_TERRAIN_RECEIVE     = 0x00000080;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_VEGETATION_CAST     = 0x00000100;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_VEGETATION_RECEIVE  = 0x00000200;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_BUILDINGS_CAST      = 0x00000400;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_BUILDINGS_RECEIVE   = 0x00000800;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_CLOUDS_CAST         = 0x00001000;
-    static const DWORD SIMCONNECT_SHADOW_FLAGS_PARTICLES_CAST      = 0x00002000;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_INTERIOR_CAST       = 0x00000001;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_INTERIOR_RECEIVE    = 0x00000002;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_EXTERIOR_CAST       = 0x00000004;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_EXTERIOR_RECEIVE    = 0x00000008;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_SIMOBJECTS_CAST     = 0x00000010;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_SIMOBJECTS_RECEIVE  = 0x00000020;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_TERRAIN_CAST        = 0x00000040;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_TERRAIN_RECEIVE     = 0x00000080;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_VEGETATION_CAST     = 0x00000100;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_VEGETATION_RECEIVE  = 0x00000200;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_BUILDINGS_CAST      = 0x00000400;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_BUILDINGS_RECEIVE   = 0x00000800;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_CLOUDS_CAST         = 0x00001000;
+static const DWORD SIMCONNECT_SHADOW_FLAGS_PARTICLES_CAST      = 0x00002000;
 
 
 enum SIMCONNECT_GOAL_STATE
@@ -552,7 +591,7 @@ enum SIMCONNECT_GOAL_STATE
 enum SIMCONNECT_GOAL_RESOLUTION
 {
     SIMCONNECT_GOAL_RESOLUTION_COMPLETED,
-	SIMCONNECT_GOAL_RESOLUTION_FAILED,
+    SIMCONNECT_GOAL_RESOLUTION_FAILED,
 };
 
 
@@ -560,15 +599,15 @@ enum SIMCONNECT_GOAL_RESOLUTION
 enum SIMCONNECT_MISSION_OBJECTIVE_STATUS
 {
     SIMCONNECT_MISSION_OBJECTIVE_STATUS_PENDING,
-	SIMCONNECT_MISSION_OBJECTIVE_STATUS_PASSED,
-	SIMCONNECT_MISSION_OBJECTIVE_STATUS_FAILED,
+    SIMCONNECT_MISSION_OBJECTIVE_STATUS_PASSED,
+    SIMCONNECT_MISSION_OBJECTIVE_STATUS_FAILED,
 };
 
 enum SIMCONNECT_MISSION_OBJECT_TYPE
 {
     SIMCONNECT_MISSION_OBJECT_TYPE_GOAL,
-	SIMCONNECT_MISSION_OBJECT_TYPE_MISSION_OBJECTIVE,
-	SIMCONNECT_MISSION_OBJECT_TYPE_FLIGHT_SEGMENT,
+    SIMCONNECT_MISSION_OBJECT_TYPE_MISSION_OBJECTIVE,
+    SIMCONNECT_MISSION_OBJECT_TYPE_FLIGHT_SEGMENT,
     SIMCONNECT_MISSION_OBJECT_TYPE_LANDING_TRIGGER
 };
 
@@ -587,7 +626,7 @@ typedef DWORD SIMCONNECT_NOTIFICATION_GROUP_ID;     //client-defined notificatio
 typedef DWORD SIMCONNECT_INPUT_GROUP_ID;            //client-defined input group ID
 typedef DWORD SIMCONNECT_DATA_DEFINITION_ID;        //client-defined data definition ID
 typedef DWORD SIMCONNECT_DATA_REQUEST_ID;           //client-defined request data ID
- 
+
 typedef DWORD SIMCONNECT_CLIENT_EVENT_ID;           //client-defined client event ID
 typedef DWORD SIMCONNECT_CLIENT_DATA_ID;            //client-defined client data ID
 typedef DWORD SIMCONNECT_CLIENT_DATA_DEFINITION_ID; //client-defined client data definition ID
@@ -664,7 +703,7 @@ struct SIMCONNECT_RECV_EVENT_BASE : public SIMCONNECT_RECV       // when dwID ==
 {
     static const DWORD UNKNOWN_GROUP = DWORD_MAX;
     DWORD   uGroupID;
-    DWORD   uEventID; 
+    DWORD   uEventID;
     DWORD   dwData;       // uEventID-dependent context
 };
 
@@ -719,7 +758,7 @@ struct SIMCONNECT_DATA_RACE_RESULT
     GUID MissionGUID;                      // The name of the mission to execute, NULL if no mission
     char szPlayerName[MAX_PATH];       // The name of the player
     char szSessionType[MAX_PATH];      // The type of the multiplayer session: "LAN", "GAMESPY")
-    char szAircraft[MAX_PATH];         // The aircraft type 
+    char szAircraft[MAX_PATH];         // The aircraft type
     char szPlayerRole[MAX_PATH];       // The player role in the mission
     double   fTotalTime;                              // Total time in seconds, 0 means DNF
     double   fPenaltyTime;                            // Total penalty time in seconds
@@ -743,15 +782,36 @@ struct SIMCONNECT_RECV_EVENT_RACE_LAP : public SIMCONNECT_RECV_EVENT_BASE       
 struct SIMCONNECT_RECV_EVENT_WEAPON : public SIMCONNECT_RECV_EVENT_BASE // when dwID == SIMCONNECT_RECV_ID_EVENT_WEAPON_FIRED or SIMCONNECT_RECV_ID_EVENT_WEAPON_DETONATED
 {
     DWORD   dwRequestID;
-	char szWeaponTitle[MAX_PATH];
+    char szWeaponTitle[MAX_PATH];
     char szWeaponType[MAX_PATH];
     DWORD   dwObjectID;
-	DWORD   dwAttackerID;
-	DWORD   dwTargetID;
-	SIMCONNECT_DATA_LATLONALT llaPosition;
-	DWORD	dwResult;
-	DWORD   dwFlags;
+    DWORD   dwAttackerID;
+    DWORD   dwTargetID;
+    SIMCONNECT_DATA_LATLONALT llaPosition;
+    DWORD   dwResult;
+    DWORD   dwFlags;
 };
+
+#if P3D_SDK_VERSION >= P3D_SDK_V42
+struct SIMCONNECT_RECV_EVENT_TEXT : public SIMCONNECT_RECV_EVENT_BASE
+{
+    SIMCONNECT_TEXT_TYPE eTextType;
+    SIMCONNECT_TEXT_ORIGIN eOrigin;
+    float fDuration;
+    DWORD dwFlags;
+    DWORD dwUnitSize;
+    BYTE rgMessage[1];
+};
+#endif
+
+#if P3D_SDK_VERSION >= P3D_SDK_V43
+struct SIMCONNECT_RECV_EVENT_TEXT_DESTROYED : public SIMCONNECT_RECV_EVENT_BASE
+{
+    SIMCONNECT_TEXT_TYPE eTextType;
+    SIMCONNECT_TEXT_RESULT eTextResult;
+    DWORD dwFlags;
+};
+#endif
 
 // SIMCONNECT_DATA_OBJECT_DAMAGED_BY_WEAPON
 struct SIMCONNECT_DATA_OBJECT_DAMAGED_BY_WEAPON
@@ -795,7 +855,7 @@ struct SIMCONNECT_RECV_SIMOBJECT_DATA : public SIMCONNECT_RECV            // whe
     DWORD   dwDefineID;
     DWORD   dwFlags;            // SIMCONNECT_DATA_REQUEST_FLAG
     DWORD   dwentrynumber;      // if multiple objects returned, this is number <entrynumber> out of <outof>.
-    DWORD   dwoutof;            // note: starts with 1, not 0.          
+    DWORD   dwoutof;            // note: starts with 1, not 0.
     DWORD   dwDefineCount;      // data count (number of datums, *not* byte count)
     DWORD   dwData;             // data begins here, dwDefineCount data items
 };
@@ -900,7 +960,7 @@ struct SIMCONNECT_RECV_WEATHER_OBSERVATION : public SIMCONNECT_RECV // when dwID
 };
 
 static const int SIMCONNECT_CLOUD_STATE_ARRAY_WIDTH = 64;
-static const int SIMCONNECT_CLOUD_STATE_ARRAY_SIZE = SIMCONNECT_CLOUD_STATE_ARRAY_WIDTH*SIMCONNECT_CLOUD_STATE_ARRAY_WIDTH;
+static const int SIMCONNECT_CLOUD_STATE_ARRAY_SIZE = SIMCONNECT_CLOUD_STATE_ARRAY_WIDTH * SIMCONNECT_CLOUD_STATE_ARRAY_WIDTH;
 
 struct SIMCONNECT_RECV_CLOUD_STATE : public SIMCONNECT_RECV // when dwID == SIMCONNECT_RECV_ID_CLOUD_STATE
 {
@@ -931,7 +991,7 @@ struct SIMCONNECT_RECV_SYSTEM_STATE : public SIMCONNECT_RECV // when dwID == SIM
 
 struct SIMCONNECT_RECV_VERSION : public SIMCONNECT_RECV   // when dwID == SIMCONNECT_RECV_ID_VERSION
 {
-	DWORD   dwRequestID;
+    DWORD   dwRequestID;
     DWORD   dwApplicationVersionType;
     DWORD   dwApplicationVersionMajor;
     DWORD   dwApplicationVersionMinor;
@@ -945,13 +1005,13 @@ struct SIMCONNECT_RECV_VERSION : public SIMCONNECT_RECV   // when dwID == SIMCON
 
 struct SIMCONNECT_RECV_SCENERY_COMPLEXITY : public SIMCONNECT_RECV   // when dwID == SIMCONNECT_RECV_ID_SCENERY_COMPLEXITY
 {
-	DWORD   dwRequestID;
+    DWORD   dwRequestID;
     DWORD   dwSceneryComplexity;
 };
 
 struct SIMCONNECT_RECV_SHADOW_FLAGS : public SIMCONNECT_RECV   // when dwID == SIMCONNECT_RECV_ID_SHADOW_FLAGS
 {
-	DWORD   dwRequestID;
+    DWORD   dwRequestID;
     DWORD   dwShadowFlags;
 };
 
@@ -959,7 +1019,7 @@ struct SIMCONNECT_RECV_CUSTOM_ACTION : public SIMCONNECT_RECV_EVENT_BASE
 {
     GUID guidInstanceId;      // Instance id of the action that executed
     DWORD dwWaitForCompletion;           // Wait for completion flag on the action
-    char szPayLoad[1];      // Variable length string payload associated with the mission action.  
+    char szPayLoad[1];      // Variable length string payload associated with the mission action.
 };
 
 struct SIMCONNECT_RECV_SESSION_DURATION : public SIMCONNECT_RECV   // when dwID == SIMCONNECT_RECV_ID_SESSION_DURATION
@@ -993,31 +1053,31 @@ struct SIMCONNECT_RECV_MISSION_OBJECTIVE : public SIMCONNECT_RECV //when dwID ==
 {
     DWORD dwRequestID;
     GUID guidInstanceID;                               // Instance id of the mission objective
-	BOOL isOptional;                                              // Whether mission objective is optional for mission completion
-	BOOL isObjectivePassed;                                       // Whether Mission Objective has been passed
-	SIMCONNECT_MISSION_OBJECTIVE_STATUS eMissionObjectiveStatus;  // Mission objective status
-	DWORD dwPassValue;                                            // Value needed to pass mission objective
-	DWORD dwCurrentScore;                                         // Current score of mission objective
-	DWORD dwTotalPossiblePoints;                                  // Maximum total score possible for mission objective
-	DWORD dwPointValue;                                           // Points mission objective is worth when passed
-	DWORD dwOrder;                                                // Priority order of mission objective
+    BOOL isOptional;                                              // Whether mission objective is optional for mission completion
+    BOOL isObjectivePassed;                                       // Whether Mission Objective has been passed
+    SIMCONNECT_MISSION_OBJECTIVE_STATUS eMissionObjectiveStatus;  // Mission objective status
+    DWORD dwPassValue;                                            // Value needed to pass mission objective
+    DWORD dwCurrentScore;                                         // Current score of mission objective
+    DWORD dwTotalPossiblePoints;                                  // Maximum total score possible for mission objective
+    DWORD dwPointValue;                                           // Points mission objective is worth when passed
+    DWORD dwOrder;                                                // Priority order of mission objective
     DWORD dwChildGoalCount;                                       // Number of child goals
-	char szMissionObjectiveText[MAX_PATH];          // Mission Objective text	
+    char szMissionObjectiveText[MAX_PATH];          // Mission Objective text
 };
 
 struct SIMCONNECT_RECV_MISSION_OBJECT_COUNT : public SIMCONNECT_RECV //when dwID == SIMCONNECT_RECV_ID_MISSION_OBJECT_COUNT
 {
     DWORD dwRequestID;
-	SIMCONNECT_MISSION_OBJECT_TYPE eMissionObjectType; // Type of mission object the count is for TODO REMOVE: Whether count is goal count (otherwise is mission objective count)
-	DWORD dwCount;                                     // Number of mission objects of specified type in mission
+    SIMCONNECT_MISSION_OBJECT_TYPE eMissionObjectType; // Type of mission object the count is for TODO REMOVE: Whether count is goal count (otherwise is mission objective count)
+    DWORD dwCount;                                     // Number of mission objects of specified type in mission
 };
 
 struct SIMCONNECT_RECV_FLIGHT_SEGMENT : public SIMCONNECT_RECV //when dwID == SIMCONNECT_RECV_ID_FLIGHT_SEGMENT
 {
     DWORD dwRequestID;
-	GUID guidInstanceID;      // Instance id of the flight segment
-	GUID guidSegmentGoalID;   // Instance id of the flight segment's goal
-	DWORD dwParameterCount;              // Number of parameters that are being graded in this flight segment
+    GUID guidInstanceID;      // Instance id of the flight segment
+    GUID guidSegmentGoalID;   // Instance id of the flight segment's goal
+    DWORD dwParameterCount;              // Number of parameters that are being graded in this flight segment
     DWORD dwTotalRangeCount;             // Total number of ranges combined for all parameters that are graded with this flight segment
 };
 
@@ -1117,7 +1177,7 @@ struct SIMCONNECT_DATA_FACILITY_AIRPORT
     char Icao[9];     // ICAO of the object
     double  Latitude;               // degrees
     double  Longitude;              // degrees
-    double  Altitude;               // meters   
+    double  Altitude;               // meters
 };
 
 // SIMCONNECT_RECV_AIRPORT_LIST
@@ -1188,7 +1248,7 @@ struct SIMCONNECT_DATA_INITPOSITION
 {
     double  Latitude;   // degrees
     double  Longitude;  // degrees
-    double  Altitude;   // feet   
+    double  Altitude;   // feet
     double  Pitch;      // degrees
     double  Bank;       // degrees
     double  Heading;    // degrees
@@ -1209,10 +1269,14 @@ struct SIMCONNECT_DATA_WAYPOINT
 {
     double          Latitude;   // degrees
     double          Longitude;  // degrees
-    double          Altitude;   // feet   
+    double          Altitude;   // feet
     unsigned long   Flags;
     double          ktsSpeed;   // knots
+#if P3D_SDK_VERSION >= P3D_SDK_V42
+    double          Unused;
+#else
     double          percentThrottle;
+#endif
 };
 
 // SIMCONNECT_DATA_OBSERVER
@@ -1233,15 +1297,15 @@ struct SIMCONNECT_DATA_OBSERVER
 // SIMCONNECT_RECV_OBSERVER_DATA
 struct SIMCONNECT_RECV_OBSERVER_DATA : public SIMCONNECT_RECV
 {
-	DWORD						dwRequestID;
-	char    szObserverName[128];
-	SIMCONNECT_DATA_OBSERVER      ObserverData;
+    DWORD                       dwRequestID;
+    char    szObserverName[128];
+    SIMCONNECT_DATA_OBSERVER      ObserverData;
 };
 
 // Structure returned as array in SIMCONNECT_RECV_GROUND_INFO response to SimConnect_RequestGroundInfo API call
 struct SIMCONNECT_DATA_GROUND_INFO
 {
-    BOOL bIsValid;              // true = this data item is valid 
+    BOOL bIsValid;              // true = this data item is valid
     double fLat;                // Latitude of this point (units based on SIMCONNECT_RECV_GROUND_INFO.eFlags)
     double fLon;                // Longitude of this point (units based on SIMCONNECT_RECV_GROUND_INFO.eFlags)
     double fAlt;                // Altitude of this point (units based on SIMCONNECT_RECV_GROUND_INFO.eFlags)
@@ -1277,9 +1341,9 @@ struct SIMCONNECT_RECV_EXTERNAL_SIM_BASE : public SIMCONNECT_RECV
 
 struct SIMCONNECT_RECV_EXTERNAL_SIM_CREATE : public SIMCONNECT_RECV_EXTERNAL_SIM_BASE
 {
-	DWORD dwExternalSimVarCount;				// number of simvars for this external sim
-	DWORD dwExternalSimVarBase;					// first index of simvars for this external sim
-    char szExternalSimData[1];		// Variable length string payload containing data to pass along to the external sim
+    DWORD dwExternalSimVarCount;                // number of simvars for this external sim
+    DWORD dwExternalSimVarBase;                 // first index of simvars for this external sim
+    char szExternalSimData[1];      // Variable length string payload containing data to pass along to the external sim
 };
 
 struct SIMCONNECT_RECV_EXTERNAL_SIM_DESTROY : public SIMCONNECT_RECV_EXTERNAL_SIM_BASE
@@ -1298,8 +1362,8 @@ struct SIMCONNECT_RECV_EXTERNAL_SIM_SIMULATE : public SIMCONNECT_RECV_EXTERNAL_S
 struct SIMCONNECT_RECV_EXTERNAL_SIM_LOCATION_CHANGED : public SIMCONNECT_RECV_EXTERNAL_SIM_BASE
 {
     double fLatRadians;
-    double fLonRadians; 
-    double fAltMeters; 
+    double fLonRadians;
+    double fAltMeters;
     BOOL bPlaceOnGround;
     BOOL bZeroSpeed;
 };
@@ -1348,18 +1412,18 @@ struct SIMCONNECT_DATA_VIDEO_STREAM_INFO
 #endif
 
 
-typedef void (CALLBACK *DispatchProc)(SIMCONNECT_RECV* pData, DWORD cbData, void* pContext);
+typedef void (CALLBACK *DispatchProc)(SIMCONNECT_RECV *pData, DWORD cbData, void *pContext);
 
 
-SIMCONNECTAPI SimConnect_RetrieveString(SIMCONNECT_RECV * pData, DWORD cbData, void * pStringV, char ** pszString, DWORD * pcbString);
-SIMCONNECTAPI SimConnect_GetLastSentPacketID(HANDLE hSimConnect, DWORD * pdwError);
-SIMCONNECTAPI SimConnect_CallDispatch(HANDLE hSimConnect, DispatchProc pfcnDispatch, void * pContext);
-SIMCONNECTAPI SimConnect_GetNextDispatch(HANDLE hSimConnect, SIMCONNECT_RECV ** ppData, DWORD * pcbData);
-SIMCONNECTAPI SimConnect_RequestResponseTimes(HANDLE hSimConnect, DWORD nCount, float * fElapsedSeconds);
-SIMCONNECTAPI SimConnect_InsertString(BYTE * pDest, DWORD cbDest, BYTE ** ppEnd, DWORD * pcbStringV, const char * pSource);
-SIMCONNECTAPI SimConnect_Open(HANDLE * phSimConnect, LPCSTR szName, HWND hWnd, DWORD UserEventWin32, HANDLE hEventHandle, DWORD ConfigIndex);
+SIMCONNECTAPI SimConnect_RetrieveString(SIMCONNECT_RECV *pData, DWORD cbData, void *pStringV, char **pszString, DWORD *pcbString);
+SIMCONNECTAPI SimConnect_GetLastSentPacketID(HANDLE hSimConnect, DWORD *pdwError);
+SIMCONNECTAPI SimConnect_CallDispatch(HANDLE hSimConnect, DispatchProc pfcnDispatch, void *pContext);
+SIMCONNECTAPI SimConnect_GetNextDispatch(HANDLE hSimConnect, SIMCONNECT_RECV **ppData, DWORD *pcbData);
+SIMCONNECTAPI SimConnect_RequestResponseTimes(HANDLE hSimConnect, DWORD nCount, float *fElapsedSeconds);
+SIMCONNECTAPI SimConnect_InsertString(BYTE *pDest, DWORD cbDest, BYTE **ppEnd, DWORD *pcbStringV, const char *pSource);
+SIMCONNECTAPI SimConnect_Open(HANDLE *phSimConnect, LPCSTR szName, HWND hWnd, DWORD UserEventWin32, HANDLE hEventHandle, DWORD ConfigIndex);
 SIMCONNECTAPI SimConnect_Close(HANDLE hSimConnect);
-SIMCONNECTAPI SimConnect_MapClientEventToSimEvent(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char * EventName = "");
+SIMCONNECTAPI SimConnect_MapClientEventToSimEvent(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char *EventName = "");
 SIMCONNECTAPI SimConnect_TransmitClientEvent(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_CLIENT_EVENT_ID EventID, DWORD dwData, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_EVENT_FLAG Flags);
 SIMCONNECTAPI SimConnect_SetSystemEventState(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, SIMCONNECT_STATE dwState);
 SIMCONNECTAPI SimConnect_AddClientEventToNotificationGroup(HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_CLIENT_EVENT_ID EventID, BOOL bMaskable = FALSE);
@@ -1367,149 +1431,149 @@ SIMCONNECTAPI SimConnect_RemoveClientEvent(HANDLE hSimConnect, SIMCONNECT_NOTIFI
 SIMCONNECTAPI SimConnect_SetNotificationGroupPriority(HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, DWORD uPriority);
 SIMCONNECTAPI SimConnect_ClearNotificationGroup(HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID);
 SIMCONNECTAPI SimConnect_RequestNotificationGroup(HANDLE hSimConnect, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, DWORD dwReserved = 0, DWORD Flags = 0);
-SIMCONNECTAPI SimConnect_AddToDataDefinition(HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, const char * DatumName, const char * UnitsName, SIMCONNECT_DATATYPE DatumType = SIMCONNECT_DATATYPE_FLOAT64, float fEpsilon = 0, DWORD DatumID = SIMCONNECT_UNUSED);
+SIMCONNECTAPI SimConnect_AddToDataDefinition(HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, const char *DatumName, const char *UnitsName, SIMCONNECT_DATATYPE DatumType = SIMCONNECT_DATATYPE_FLOAT64, float fEpsilon = 0, DWORD DatumID = SIMCONNECT_UNUSED);
 SIMCONNECTAPI SimConnect_ClearDataDefinition(HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID);
 SIMCONNECTAPI SimConnect_RequestDataOnSimObject(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_PERIOD Period, SIMCONNECT_DATA_REQUEST_FLAG Flags = 0, DWORD origin = 0, DWORD interval = 0, DWORD limit = 0);
 SIMCONNECTAPI SimConnect_RequestDataOnSimObjectType(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_DATA_DEFINITION_ID DefineID, DWORD dwRadiusMeters, SIMCONNECT_SIMOBJECT_TYPE type);
-SIMCONNECTAPI SimConnect_SetDataOnSimObject(HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_SET_FLAG Flags, DWORD ArrayCount, DWORD cbUnitSize, void * pDataSet);
-SIMCONNECTAPI SimConnect_MapInputEventToClientEvent(HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char * szInputDefinition, SIMCONNECT_CLIENT_EVENT_ID DownEventID, DWORD DownValue = 0, SIMCONNECT_CLIENT_EVENT_ID UpEventID = (SIMCONNECT_CLIENT_EVENT_ID)SIMCONNECT_UNUSED, DWORD UpValue = 0, BOOL bMaskable = FALSE);
+SIMCONNECTAPI SimConnect_SetDataOnSimObject(HANDLE hSimConnect, SIMCONNECT_DATA_DEFINITION_ID DefineID, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_SET_FLAG Flags, DWORD ArrayCount, DWORD cbUnitSize, void *pDataSet);
+SIMCONNECTAPI SimConnect_MapInputEventToClientEvent(HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char *szInputDefinition, SIMCONNECT_CLIENT_EVENT_ID DownEventID, DWORD DownValue = 0, SIMCONNECT_CLIENT_EVENT_ID UpEventID = (SIMCONNECT_CLIENT_EVENT_ID)SIMCONNECT_UNUSED, DWORD UpValue = 0, BOOL bMaskable = FALSE);
 SIMCONNECTAPI SimConnect_SetInputGroupPriority(HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, DWORD uPriority);
-SIMCONNECTAPI SimConnect_RemoveInputEvent(HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char * szInputDefinition);
+SIMCONNECTAPI SimConnect_RemoveInputEvent(HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, const char *szInputDefinition);
 SIMCONNECTAPI SimConnect_ClearInputGroup(HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID);
 SIMCONNECTAPI SimConnect_SetInputGroupState(HANDLE hSimConnect, SIMCONNECT_INPUT_GROUP_ID GroupID, DWORD dwState);
-SIMCONNECTAPI SimConnect_RequestReservedKey(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char * szKeyChoice1 = "", const char * szKeyChoice2 = "", const char * szKeyChoice3 = "");
-SIMCONNECTAPI SimConnect_SubscribeToSystemEvent(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char * SystemEventName);
+SIMCONNECTAPI SimConnect_RequestReservedKey(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char *szKeyChoice1 = "", const char *szKeyChoice2 = "", const char *szKeyChoice3 = "");
+SIMCONNECTAPI SimConnect_SubscribeToSystemEvent(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char *SystemEventName);
 SIMCONNECTAPI SimConnect_UnsubscribeFromSystemEvent(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID);
 SIMCONNECTAPI SimConnect_WeatherRequestInterpolatedObservation(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, float lat, float lon, float alt);
-SIMCONNECTAPI SimConnect_WeatherRequestObservationAtStation(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * szICAO);
+SIMCONNECTAPI SimConnect_WeatherRequestObservationAtStation(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *szICAO);
 SIMCONNECTAPI SimConnect_WeatherRequestObservationAtNearestStation(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, float lat, float lon);
-SIMCONNECTAPI SimConnect_WeatherCreateStation(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * szICAO, const char * szName, float lat, float lon, float alt);
-SIMCONNECTAPI SimConnect_WeatherRemoveStation(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * szICAO);
-SIMCONNECTAPI SimConnect_WeatherSetObservation(HANDLE hSimConnect, DWORD Seconds, const char * szMETAR);
+SIMCONNECTAPI SimConnect_WeatherCreateStation(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *szICAO, const char *szName, float lat, float lon, float alt);
+SIMCONNECTAPI SimConnect_WeatherRemoveStation(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *szICAO);
+SIMCONNECTAPI SimConnect_WeatherSetObservation(HANDLE hSimConnect, DWORD Seconds, const char *szMETAR);
 SIMCONNECTAPI SimConnect_WeatherSetModeServer(HANDLE hSimConnect, DWORD dwPort, DWORD dwSeconds);
-SIMCONNECTAPI SimConnect_WeatherSetModeTheme(HANDLE hSimConnect, const char * szThemeName);
+SIMCONNECTAPI SimConnect_WeatherSetModeTheme(HANDLE hSimConnect, const char *szThemeName);
 SIMCONNECTAPI SimConnect_WeatherSetModeGlobal(HANDLE hSimConnect);
 SIMCONNECTAPI SimConnect_WeatherSetModeCustom(HANDLE hSimConnect);
 SIMCONNECTAPI SimConnect_WeatherSetDynamicUpdateRate(HANDLE hSimConnect, DWORD dwRate);
 SIMCONNECTAPI SimConnect_WeatherRequestCloudState(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, float minLat, float minLon, float minAlt, float maxLat, float maxLon, float maxAlt, DWORD dwFlags = 0);
 SIMCONNECTAPI SimConnect_WeatherCreateThermal(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, float lat, float lon, float alt, float radius, float height, float coreRate = 3.0f, float coreTurbulence = 0.05f, float sinkRate = 3.0f, float sinkTurbulence = 0.2f, float coreSize = 0.4f, float coreTransitionSize = 0.1f, float sinkLayerSize = 0.4f, float sinkTransitionSize = 0.1f);
 SIMCONNECTAPI SimConnect_WeatherRemoveThermal(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID);
-SIMCONNECTAPI SimConnect_AICreateParkedATCAircraft(HANDLE hSimConnect, const char * szContainerTitle, const char * szTailNumber, const char * szAirportID, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_AICreateEnrouteATCAircraft(HANDLE hSimConnect, const char * szContainerTitle, const char * szTailNumber, int iFlightNumber, const char * szFlightPlanPath, double dFlightPlanPosition, BOOL bTouchAndGo, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_AICreateNonATCAircraft(HANDLE hSimConnect, const char * szContainerTitle, const char * szTailNumber, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_AICreateSimulatedObject(HANDLE hSimConnect, const char * szContainerTitle, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_AICreateParkedATCAircraft(HANDLE hSimConnect, const char *szContainerTitle, const char *szTailNumber, const char *szAirportID, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_AICreateEnrouteATCAircraft(HANDLE hSimConnect, const char *szContainerTitle, const char *szTailNumber, int iFlightNumber, const char *szFlightPlanPath, double dFlightPlanPosition, BOOL bTouchAndGo, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_AICreateNonATCAircraft(HANDLE hSimConnect, const char *szContainerTitle, const char *szTailNumber, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_AICreateSimulatedObject(HANDLE hSimConnect, const char *szContainerTitle, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_AIReleaseControl(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_AIRemoveObject(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_AISetAircraftFlightPlan(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, const char * szFlightPlanPath, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_AISetAircraftFlightPlan(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, const char *szFlightPlanPath, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_ExecuteMissionAction(HANDLE hSimConnect, const GUID guidInstanceId);
 SIMCONNECTAPI SimConnect_CompleteCustomMissionAction(HANDLE hSimConnect, const GUID guidInstanceId);
 SIMCONNECTAPI SimConnect_CameraSetRelative6DOF(HANDLE hSimConnect, float fDeltaX, float fDeltaY, float fDeltaZ, float fPitchDeg, float fBankDeg, float fHeadingDeg);
-SIMCONNECTAPI SimConnect_MenuAddItem(HANDLE hSimConnect, const char * szMenuItem, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, DWORD dwData);
+SIMCONNECTAPI SimConnect_MenuAddItem(HANDLE hSimConnect, const char *szMenuItem, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, DWORD dwData);
 SIMCONNECTAPI SimConnect_MenuDeleteItem(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID MenuEventID);
-SIMCONNECTAPI SimConnect_MenuAddSubItem(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, const char * szMenuItem, SIMCONNECT_CLIENT_EVENT_ID SubMenuEventID, DWORD dwData);
+SIMCONNECTAPI SimConnect_MenuAddSubItem(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, const char *szMenuItem, SIMCONNECT_CLIENT_EVENT_ID SubMenuEventID, DWORD dwData);
 SIMCONNECTAPI SimConnect_MenuDeleteSubItem(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, const SIMCONNECT_CLIENT_EVENT_ID SubMenuEventID);
-SIMCONNECTAPI SimConnect_RequestSystemState(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * szState);
-SIMCONNECTAPI SimConnect_SetSystemState(HANDLE hSimConnect, const char * szState, DWORD dwInteger, float fFloat, const char * szString);
-SIMCONNECTAPI SimConnect_MapClientDataNameToID(HANDLE hSimConnect, const char * szClientDataName, SIMCONNECT_CLIENT_DATA_ID ClientDataID);
+SIMCONNECTAPI SimConnect_RequestSystemState(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *szState);
+SIMCONNECTAPI SimConnect_SetSystemState(HANDLE hSimConnect, const char *szState, DWORD dwInteger, float fFloat, const char *szString);
+SIMCONNECTAPI SimConnect_MapClientDataNameToID(HANDLE hSimConnect, const char *szClientDataName, SIMCONNECT_CLIENT_DATA_ID ClientDataID);
 SIMCONNECTAPI SimConnect_CreateClientData(HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_ID ClientDataID, DWORD dwSize, SIMCONNECT_CREATE_CLIENT_DATA_FLAG Flags);
 SIMCONNECTAPI SimConnect_AddToClientDataDefinition(HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID, DWORD dwOffset, DWORD dwSizeOrType, float fEpsilon = 0, DWORD DatumID = SIMCONNECT_UNUSED);
 SIMCONNECTAPI SimConnect_ClearClientDataDefinition(HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID);
 SIMCONNECTAPI SimConnect_RequestClientData(HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_ID ClientDataID, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID, SIMCONNECT_CLIENT_DATA_PERIOD Period = SIMCONNECT_CLIENT_DATA_PERIOD_ONCE, SIMCONNECT_CLIENT_DATA_REQUEST_FLAG Flags = 0, DWORD origin = 0, DWORD interval = 0, DWORD limit = 0);
-SIMCONNECTAPI SimConnect_SetClientData(HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_ID ClientDataID, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID, SIMCONNECT_CLIENT_DATA_SET_FLAG Flags, DWORD dwReserved, DWORD cbUnitSize, void * pDataSet);
-SIMCONNECTAPI SimConnect_FlightLoad(HANDLE hSimConnect, const char * szFileName);
-SIMCONNECTAPI SimConnect_FlightSave(HANDLE hSimConnect, const char * szFileName, const char * szTitle, const char * szDescription, DWORD Flags);
-SIMCONNECTAPI SimConnect_FlightPlanLoad(HANDLE hSimConnect, const char * szFileName);
-SIMCONNECTAPI SimConnect_Text(HANDLE hSimConnect, SIMCONNECT_TEXT_TYPE type, float fTimeSeconds, SIMCONNECT_CLIENT_EVENT_ID EventID, DWORD cbUnitSize, void * pDataSet);
+SIMCONNECTAPI SimConnect_SetClientData(HANDLE hSimConnect, SIMCONNECT_CLIENT_DATA_ID ClientDataID, SIMCONNECT_CLIENT_DATA_DEFINITION_ID DefineID, SIMCONNECT_CLIENT_DATA_SET_FLAG Flags, DWORD dwReserved, DWORD cbUnitSize, void *pDataSet);
+SIMCONNECTAPI SimConnect_FlightLoad(HANDLE hSimConnect, const char *szFileName);
+SIMCONNECTAPI SimConnect_FlightSave(HANDLE hSimConnect, const char *szFileName, const char *szTitle, const char *szDescription, DWORD Flags);
+SIMCONNECTAPI SimConnect_FlightPlanLoad(HANDLE hSimConnect, const char *szFileName);
+SIMCONNECTAPI SimConnect_Text(HANDLE hSimConnect, SIMCONNECT_TEXT_TYPE type, float fTimeSeconds, SIMCONNECT_CLIENT_EVENT_ID EventID, DWORD cbUnitSize, void *pDataSet);
 SIMCONNECTAPI SimConnect_SubscribeToFacilities(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_UnsubscribeToFacilities(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type);
 SIMCONNECTAPI SimConnect_RequestFacilitiesList(HANDLE hSimConnect, SIMCONNECT_FACILITY_LIST_TYPE type, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_ChangeVehicle(HANDLE hSimConnect, const char * vehicleName);
+SIMCONNECTAPI SimConnect_ChangeVehicle(HANDLE hSimConnect, const char *vehicleName);
 SIMCONNECTAPI SimConnect_SetCameraRenderSettings(HANDLE hSimConnect, const GUID guidCamera, DWORD dwFlags);
 SIMCONNECTAPI SimConnect_SendCameraCommand(HANDLE hSimConnect, const GUID guidCamera, SIMCONNECT_CAMERA_COMMAND eCommand);
-SIMCONNECTAPI SimConnect_CreateObserver(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_OBSERVER ObserverData);
-SIMCONNECTAPI SimConnect_RequestObserverData(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * szName);
-SIMCONNECTAPI SimConnect_MoveObserver(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_XYZ Translation);
-SIMCONNECTAPI SimConnect_RotateObserver(HANDLE hSimConnect, const char * szName, DWORD dwAxis, double dAngleDegrees);
-SIMCONNECTAPI SimConnect_SetObserverPosition(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_LATLONALT Position);
-SIMCONNECTAPI SimConnect_SetObserverRotation(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_PBH RotationAngles);
-SIMCONNECTAPI SimConnect_SetObserverLookAt(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_LATLONALT TargetPosition);
-SIMCONNECTAPI SimConnect_SetObserverFieldOfView(HANDLE hSimConnect, const char * szName, float fHorizontal, float fVertical);
-SIMCONNECTAPI SimConnect_SetObserverStepSize(HANDLE hSimConnect, const char * szName, float fLinearStep, float fAngularStep);
-SIMCONNECTAPI SimConnect_SetObserverFocalLength(HANDLE hSimConnect, const char * szName, float fFocalLength);
-SIMCONNECTAPI SimConnect_SetObserverFocusFixed(HANDLE hSimConnect, const char * szName, BOOL bFocusFixed);
-SIMCONNECTAPI SimConnect_SetObserverRegime(HANDLE hSimConnect, const char * szName, DWORD eRegime);
-SIMCONNECTAPI SimConnect_SetObserverZoomLevels(HANDLE hSimConnect, const char * szName, DWORD dwNumLevels);
+SIMCONNECTAPI SimConnect_CreateObserver(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_OBSERVER ObserverData);
+SIMCONNECTAPI SimConnect_RequestObserverData(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *szName);
+SIMCONNECTAPI SimConnect_MoveObserver(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_XYZ Translation);
+SIMCONNECTAPI SimConnect_RotateObserver(HANDLE hSimConnect, const char *szName, DWORD dwAxis, double dAngleDegrees);
+SIMCONNECTAPI SimConnect_SetObserverPosition(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_LATLONALT Position);
+SIMCONNECTAPI SimConnect_SetObserverRotation(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_PBH RotationAngles);
+SIMCONNECTAPI SimConnect_SetObserverLookAt(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_LATLONALT TargetPosition);
+SIMCONNECTAPI SimConnect_SetObserverFieldOfView(HANDLE hSimConnect, const char *szName, float fHorizontal, float fVertical);
+SIMCONNECTAPI SimConnect_SetObserverStepSize(HANDLE hSimConnect, const char *szName, float fLinearStep, float fAngularStep);
+SIMCONNECTAPI SimConnect_SetObserverFocalLength(HANDLE hSimConnect, const char *szName, float fFocalLength);
+SIMCONNECTAPI SimConnect_SetObserverFocusFixed(HANDLE hSimConnect, const char *szName, BOOL bFocusFixed);
+SIMCONNECTAPI SimConnect_SetObserverRegime(HANDLE hSimConnect, const char *szName, DWORD eRegime);
+SIMCONNECTAPI SimConnect_SetObserverZoomLevels(HANDLE hSimConnect, const char *szName, DWORD dwNumLevels);
 SIMCONNECTAPI SimConnect_RequestGroundInfo(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, double minLat, double minLon, double minAlt, double maxLat, double maxLon, double maxAlt, DWORD dwGridWidth, DWORD dwGridHeight, SIMCONNECT_GROUND_INFO_LATLON_FORMAT eLatLonFormat, SIMCONNECT_GROUND_INFO_ALT_FORMAT eAltFormat, SIMCONNECT_GROUND_INFO_SOURCE_FLAG eSourceFlags);
 SIMCONNECTAPI SimConnect_RequestGroundInfoOnSimObject(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, DWORD ObjectID, double offLat, double offsetLon, double offsetAlt, DWORD dwGridWidth, DWORD dwGridHeight, SIMCONNECT_GROUND_INFO_LATLON_FORMAT eLatLonFormat, SIMCONNECT_GROUND_INFO_ALT_FORMAT eAltFormat, SIMCONNECT_GROUND_INFO_SOURCE_FLAG eSourceFlags, SIMCONNECT_PERIOD Period, SIMCONNECT_DATA_REQUEST_FLAG Flags = 0, DWORD origin = 0, DWORD interval = 0, DWORD limit = 0);
 SIMCONNECTAPI SimConnect_RegisterExternalSim(HANDLE hSimConnect, const GUID guidExternalSimID, SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG CallbackMask, SIMCONNECT_DATA_DEFINITION_ID DefineID);
 SIMCONNECTAPI SimConnect_UnregisterExternalSim(HANDLE hSimConnect, const GUID guidExternalSimID);
 SIMCONNECTAPI SimConnect_RegisterExternalSecondarySim(HANDLE hSimConnect, const GUID guidExternalSecondarySimID, SIMCONNECT_EXTERNAL_SIM_CALLBACK_FLAG CallbackMask, SIMCONNECT_DATA_DEFINITION_ID DefineID);
 SIMCONNECTAPI SimConnect_UnregisterExternalSecondarySim(HANDLE hSimConnect, const GUID guidExternalSecondarySimID);
-SIMCONNECTAPI SimConnect_AttachExternalSecondarySimToSimObject(HANDLE hSimConnect, DWORD dwObjectID, const GUID guidExternalSecondarySimID, const char * szExternalSimParams, DWORD dwExternalSimVarCount);
+SIMCONNECTAPI SimConnect_AttachExternalSecondarySimToSimObject(HANDLE hSimConnect, DWORD dwObjectID, const GUID guidExternalSecondarySimID, const char *szExternalSimParams, DWORD dwExternalSimVarCount);
 SIMCONNECTAPI SimConnect_DetachExternalSecondarySimFromSimObject(HANDLE hSimConnect, DWORD dwObjectID, const GUID guidExternalSecondarySimID);
-SIMCONNECTAPI SimConnect_AICreateObjectWithExternalSim(HANDLE hSimConnect, const char * szContainerTitle, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID, const GUID guidExternalSimID, const char * szExternalSimParams, DWORD dwExternalSimVarCount);
-SIMCONNECTAPI SimConnect_ChangeVehicleWithExternalSim(HANDLE hSimConnect, const char * szContainerTitle, const GUID guidExternalSimID, const char * szExternalSimParams, DWORD dwExternalSimVarCount);
+SIMCONNECTAPI SimConnect_AICreateObjectWithExternalSim(HANDLE hSimConnect, const char *szContainerTitle, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID, const GUID guidExternalSimID, const char *szExternalSimParams, DWORD dwExternalSimVarCount);
+SIMCONNECTAPI SimConnect_ChangeVehicleWithExternalSim(HANDLE hSimConnect, const char *szContainerTitle, const GUID guidExternalSimID, const char *szExternalSimParams, DWORD dwExternalSimVarCount);
 SIMCONNECTAPI SimConnect_RequestSynchronousBlock(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_PERIOD Period, SIMCONNECT_DATA_REQUEST_FLAG Flags = 0, DWORD origin = 0, DWORD interval = 0, DWORD limit = 0);
 SIMCONNECTAPI SimConnect_SynchronousUnblock(HANDLE hSimConnect);
 SIMCONNECTAPI SimConnect_SetSynchronousTimeout(HANDLE hSimConnect, float fTimeSeconds);
-SIMCONNECTAPI SimConnect_SubscribeToSystemEventEx(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char * SystemEventName, SIMCONNECT_EVENT_SUBSCRIPTION_FLAG Flags);
-SIMCONNECTAPI SimConnect_AttachObjectToSimObject(HANDLE hSimConnect, DWORD dwObjectID, SIMCONNECT_DATA_XYZ vecOff1, SIMCONNECT_DATA_PBH rotOff1, const char * szContainerTitle, SIMCONNECT_DATA_XYZ vecOff2, SIMCONNECT_DATA_PBH rotOff2, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_SubscribeToSystemEventEx(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID EventID, const char *SystemEventName, SIMCONNECT_EVENT_SUBSCRIPTION_FLAG Flags);
+SIMCONNECTAPI SimConnect_AttachObjectToSimObject(HANDLE hSimConnect, DWORD dwObjectID, SIMCONNECT_DATA_XYZ vecOff1, SIMCONNECT_DATA_PBH rotOff1, const char *szContainerTitle, SIMCONNECT_DATA_XYZ vecOff2, SIMCONNECT_DATA_PBH rotOff2, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_AttachSimObjectToSimObject(HANDLE hSimConnect, DWORD dwObjectID1, SIMCONNECT_DATA_XYZ vecOff1, SIMCONNECT_DATA_PBH rotOff1, DWORD dwObjectID2, SIMCONNECT_DATA_XYZ vecOff2, SIMCONNECT_DATA_PBH rotOff2);
 SIMCONNECTAPI SimConnect_ReleaseSimObjectFromSimObject(HANDLE hSimConnect, DWORD dwObjectID1, DWORD dwObjectID2);
 SIMCONNECTAPI SimConnect_AISetGroundClamp(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, BOOL bGroundClamp = TRUE);
-SIMCONNECTAPI SimConnect_SetCameraColorizationMode(HANDLE hSimConnect, const char * szName, int eColorizationMode);
-SIMCONNECTAPI SimConnect_SetCameraSensorMode(HANDLE hSimConnect, const char * szName, SIMCONNECT_CAMERA_SENSOR_MODE eSensorMode);
-SIMCONNECTAPI SimConnect_CreateEffect(HANDLE hSimConnect, const char * effectName, SIMCONNECT_DATA_LATLONALT TargetPosition, SIMCONNECT_DATA_XYZ offset, BOOL attachToSimObject, DWORD dwObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID, int effectDuration = -1);
+SIMCONNECTAPI SimConnect_SetCameraColorizationMode(HANDLE hSimConnect, const char *szName, int eColorizationMode);
+SIMCONNECTAPI SimConnect_SetCameraSensorMode(HANDLE hSimConnect, const char *szName, SIMCONNECT_CAMERA_SENSOR_MODE eSensorMode);
+SIMCONNECTAPI SimConnect_CreateEffect(HANDLE hSimConnect, const char *effectName, SIMCONNECT_DATA_LATLONALT TargetPosition, SIMCONNECT_DATA_XYZ offset, BOOL attachToSimObject, DWORD dwObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID, int effectDuration = -1);
 SIMCONNECTAPI SimConnect_RemoveEffect(HANDLE hSimConnect, const DWORD effectId);
-SIMCONNECTAPI SimConnect_AttachWeaponToObject(HANDLE hSimConnect, const char * szContainerTitle, DWORD dwObjectID, int hardpointIndex, int numOfRounds);
+SIMCONNECTAPI SimConnect_AttachWeaponToObject(HANDLE hSimConnect, const char *szContainerTitle, DWORD dwObjectID, int hardpointIndex, int numOfRounds);
 SIMCONNECTAPI SimConnect_ClearWeapons(HANDLE hSimConnect, DWORD dwObjectID);
-SIMCONNECTAPI SimConnect_CreateCameraDefinition(HANDLE hSimConnect, const GUID guidCamera, SIMCONNECT_CAMERA_TYPE ViewType, const char * szTitle, SIMCONNECT_DATA_XYZ xyzBias, SIMCONNECT_DATA_PBH pbhBias);
-SIMCONNECTAPI SimConnect_CreateCameraInstance(HANDLE hSimConnect, const GUID guidCamera, const char * szName, SIMCONNECT_OBJECT_ID dwObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_CreateCameraDefinition(HANDLE hSimConnect, const GUID guidCamera, SIMCONNECT_CAMERA_TYPE ViewType, const char *szTitle, SIMCONNECT_DATA_XYZ xyzBias, SIMCONNECT_DATA_PBH pbhBias);
+SIMCONNECTAPI SimConnect_CreateCameraInstance(HANDLE hSimConnect, const GUID guidCamera, const char *szName, SIMCONNECT_OBJECT_ID dwObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_DeleteCameraInstance(HANDLE hSimConnect, const GUID guidCamera, UINT32 instanceId);
-SIMCONNECTAPI SimConnect_SetCameraHorizontalFov(HANDLE hSimConnect, const char * szName, float hFov);
-SIMCONNECTAPI SimConnect_SetCameraVerticalFov(HANDLE hSimConnect, const char * szName, float vFov);
-SIMCONNECTAPI SimConnect_SetCameraFov(HANDLE hSimConnect, const char * szName, float hFov, float vFov);
-SIMCONNECTAPI SimConnect_CameraSetRelative6DofByName(HANDLE hSimConnect, const char * szName, float fDeltaX, float fDeltaY, float fDeltaZ, float fPitchDeg, float fBankDeg, float fHeadingDeg);
+SIMCONNECTAPI SimConnect_SetCameraHorizontalFov(HANDLE hSimConnect, const char *szName, float hFov);
+SIMCONNECTAPI SimConnect_SetCameraVerticalFov(HANDLE hSimConnect, const char *szName, float vFov);
+SIMCONNECTAPI SimConnect_SetCameraFov(HANDLE hSimConnect, const char *szName, float hFov, float vFov);
+SIMCONNECTAPI SimConnect_CameraSetRelative6DofByName(HANDLE hSimConnect, const char *szName, float fDeltaX, float fDeltaY, float fDeltaZ, float fPitchDeg, float fBankDeg, float fHeadingDeg);
 SIMCONNECTAPI SimConnect_SetMainCameraSensorMode(HANDLE hSimConnect, SIMCONNECT_CAMERA_SENSOR_MODE eSensorMode);
 SIMCONNECTAPI SimConnect_SetMainCameraHorizontalFov(HANDLE hSimConnect, float hFov);
 SIMCONNECTAPI SimConnect_SetMainCameraVerticalFov(HANDLE hSimConnect, float vFov);
 SIMCONNECTAPI SimConnect_SetMainCameraFov(HANDLE hSimConnect, float hFov, float vFov);
-SIMCONNECTAPI SimConnect_CameraZoomIn(HANDLE hSimConnect, const char * szName);
-SIMCONNECTAPI SimConnect_CameraZoomOut(HANDLE hSimConnect, const char * szName);
+SIMCONNECTAPI SimConnect_CameraZoomIn(HANDLE hSimConnect, const char *szName);
+SIMCONNECTAPI SimConnect_CameraZoomOut(HANDLE hSimConnect, const char *szName);
 SIMCONNECTAPI SimConnect_MainCameraZoomIn(HANDLE hSimConnect);
 SIMCONNECTAPI SimConnect_MainCameraZoomOut(HANDLE hSimConnect);
-SIMCONNECTAPI SimConnect_OpenView(HANDLE hSimConnect, const char * szName, const char * szTitle = NULL);
-SIMCONNECTAPI SimConnect_CloseView(HANDLE hSimConnect, const char * szName);
-SIMCONNECTAPI SimConnect_UndockView(HANDLE hSimConnect, const char * szName);
-SIMCONNECTAPI SimConnect_DockView(HANDLE hSimConnect, const char * szName);
-SIMCONNECTAPI SimConnect_SetCameraWindowPosition(HANDLE hSimConnect, const char * szName, UINT uX, UINT uY);
-SIMCONNECTAPI SimConnect_SetCameraWindowSize(HANDLE hSimConnect, const char * szName, UINT uWidth, UINT uHeight);
-SIMCONNECTAPI SimConnect_ChangeView(HANDLE hSimConnect, const char * szName);
-SIMCONNECTAPI SimConnect_AddPostProcess(HANDLE hSimConnect, const char * szCameraName, const char * szPostProcessName);
-SIMCONNECTAPI SimConnect_AddPostProcessMainCamera(HANDLE hSimConnect, const char * szPostProcessName);
-SIMCONNECTAPI SimConnect_RemovePostProcess(HANDLE hSimConnect, const char * szCameraName, const char * szPostProcessName);
-SIMCONNECTAPI SimConnect_RemovePostProcessMainCamera(HANDLE hSimConnect, const char * szPostProcessName);
+SIMCONNECTAPI SimConnect_OpenView(HANDLE hSimConnect, const char *szName, const char *szTitle = NULL);
+SIMCONNECTAPI SimConnect_CloseView(HANDLE hSimConnect, const char *szName);
+SIMCONNECTAPI SimConnect_UndockView(HANDLE hSimConnect, const char *szName);
+SIMCONNECTAPI SimConnect_DockView(HANDLE hSimConnect, const char *szName);
+SIMCONNECTAPI SimConnect_SetCameraWindowPosition(HANDLE hSimConnect, const char *szName, UINT uX, UINT uY);
+SIMCONNECTAPI SimConnect_SetCameraWindowSize(HANDLE hSimConnect, const char *szName, UINT uWidth, UINT uHeight);
+SIMCONNECTAPI SimConnect_ChangeView(HANDLE hSimConnect, const char *szName);
+SIMCONNECTAPI SimConnect_AddPostProcess(HANDLE hSimConnect, const char *szCameraName, const char *szPostProcessName);
+SIMCONNECTAPI SimConnect_AddPostProcessMainCamera(HANDLE hSimConnect, const char *szPostProcessName);
+SIMCONNECTAPI SimConnect_RemovePostProcess(HANDLE hSimConnect, const char *szCameraName, const char *szPostProcessName);
+SIMCONNECTAPI SimConnect_RemovePostProcessMainCamera(HANDLE hSimConnect, const char *szPostProcessName);
 SIMCONNECTAPI SimConnect_CameraSmoothRelative6DOF(HANDLE hSimConnect, float fDeltaX, float fDeltaY, float fDeltaZ, float fPitchDeg, float fBankDeg, float fHeadingDeg, float fSmoothTime = 0);
-SIMCONNECTAPI SimConnect_CameraSmoothRelative6DofByName(HANDLE hSimConnect, const char * szName, float fDeltaX, float fDeltaY, float fDeltaZ, float fPitchDeg, float fBankDeg, float fHeadingDeg, float fSmoothTime = 0);
-SIMCONNECTAPI SimConnect_CameraPanToView(HANDLE hSimConnect, const char * szCameraName, const char * szTargetName, float fSmoothTime = 0);
-SIMCONNECTAPI SimConnect_MainCameraPanToView(HANDLE hSimConnect, const char * szTargetName, float fSmoothTime = 0);
-SIMCONNECTAPI SimConnect_AICreateSimulatedObjectEx(HANDLE hSimConnect, const char * szContainerTitle, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID, BOOL isDisabled = FALSE, int OwnerID = -1);
+SIMCONNECTAPI SimConnect_CameraSmoothRelative6DofByName(HANDLE hSimConnect, const char *szName, float fDeltaX, float fDeltaY, float fDeltaZ, float fPitchDeg, float fBankDeg, float fHeadingDeg, float fSmoothTime = 0);
+SIMCONNECTAPI SimConnect_CameraPanToView(HANDLE hSimConnect, const char *szCameraName, const char *szTargetName, float fSmoothTime = 0);
+SIMCONNECTAPI SimConnect_MainCameraPanToView(HANDLE hSimConnect, const char *szTargetName, float fSmoothTime = 0);
+SIMCONNECTAPI SimConnect_AICreateSimulatedObjectEx(HANDLE hSimConnect, const char *szContainerTitle, SIMCONNECT_DATA_INITPOSITION InitPos, SIMCONNECT_DATA_REQUEST_ID RequestID, BOOL isDisabled = FALSE, int OwnerID = -1);
 SIMCONNECTAPI SimConnect_AIReleaseControlEx(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_DATA_REQUEST_ID RequestID, BOOL destroyAI = FALSE);
 SIMCONNECTAPI SimConnect_ReportWeaponDamage(HANDLE hSimConnect, SIMCONNECT_DATA_OBJECT_DAMAGED_BY_WEAPON WeaponDamageData);
 SIMCONNECTAPI SimConnect_RequestVersion(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_RequestSceneryComplexity(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_RequestShadowFlags(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_ObserverTrackEntityOn(HANDLE hSimConnect, const char * szName, DWORD dwObjectID);
-SIMCONNECTAPI SimConnect_ObserverTrackEntityOff(HANDLE hSimConnect, const char * szName);
-SIMCONNECTAPI SimConnect_ObserverAttachToEntityOn(HANDLE hSimConnect, const char * szName, DWORD dwObjectID, SIMCONNECT_DATA_XYZ Offset);
-SIMCONNECTAPI SimConnect_ObserverAttachToEntityOff(HANDLE hSimConnect, const char * szName);
-SIMCONNECTAPI SimConnect_SetObserverLookAtEx(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_LATLONALT TargetPosition);
-SIMCONNECTAPI SimConnect_RequestCameraFov(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_ObserverTrackEntityOn(HANDLE hSimConnect, const char *szName, DWORD dwObjectID);
+SIMCONNECTAPI SimConnect_ObserverTrackEntityOff(HANDLE hSimConnect, const char *szName);
+SIMCONNECTAPI SimConnect_ObserverAttachToEntityOn(HANDLE hSimConnect, const char *szName, DWORD dwObjectID, SIMCONNECT_DATA_XYZ Offset);
+SIMCONNECTAPI SimConnect_ObserverAttachToEntityOff(HANDLE hSimConnect, const char *szName);
+SIMCONNECTAPI SimConnect_SetObserverLookAtEx(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_LATLONALT TargetPosition);
+SIMCONNECTAPI SimConnect_RequestCameraFov(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_RequestCameraRelative6DOF(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_RequestCameraRelative6DofByName(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_RequestCameraSensorMode(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_RequestCameraWindowPosition(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_RequestCameraWindowSize(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_RequestCameraRelative6DofByName(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_RequestCameraSensorMode(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_RequestCameraWindowPosition(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
+SIMCONNECTAPI SimConnect_RequestCameraWindowSize(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_RequestMainCameraFov(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_RequestMainCameraSensorMode(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_RequestGoalDataByGUID(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const GUID guidInstanceID);
@@ -1529,28 +1593,28 @@ SIMCONNECTAPI SimConnect_RequestLandingTriggerCount(HANDLE hSimConnect, SIMCONNE
 SIMCONNECTAPI SimConnect_RequestLandingTriggerLandingInfoCount(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, int landingTriggerIndex);
 SIMCONNECTAPI SimConnect_RequestLandingTriggerLandingInfoByIndex(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const GUID landingTriggerInstanceID, int landingIndex);
 SIMCONNECTAPI SimConnect_RequestSessionDuration(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
-SIMCONNECTAPI SimConnect_RequestAttachPointData(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, DWORD dwObjectID, const char * szAttachPointName, BOOL bRequestWorldCoordinates = FALSE);
-SIMCONNECTAPI SimConnect_PlaybackRecording(HANDLE hSimConnect, const char * szFileName, int bookmarkIndex, double endTimeInSeconds);
+SIMCONNECTAPI SimConnect_RequestAttachPointData(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, DWORD dwObjectID, const char *szAttachPointName, BOOL bRequestWorldCoordinates = FALSE);
+SIMCONNECTAPI SimConnect_PlaybackRecording(HANDLE hSimConnect, const char *szFileName, int bookmarkIndex, double endTimeInSeconds);
 SIMCONNECTAPI SimConnect_StartRecorder(HANDLE hSimConnect);
-SIMCONNECTAPI SimConnect_StopRecorderAndSaveRecording(HANDLE hSimConnect, const char * szTitle, const char * szDescription, BOOL promptUser);
-SIMCONNECTAPI SimConnect_RequestRecordingInfo(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * szFileName);
-SIMCONNECTAPI SimConnect_RequestBookmarkInfo(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char * szFileName, int bookmarkIndex);
-SIMCONNECTAPI SimConnect_ObserverTrackLocationOn(HANDLE hSimConnect, const char * szName, SIMCONNECT_DATA_LATLONALT TargetPosition);
-SIMCONNECTAPI SimConnect_ObserverTrackLocationOff(HANDLE hSimConnect, const char * szName);
-SIMCONNECTAPI SimConnect_SetObserverSceneryOrigin(HANDLE hSimConnect, const char * szName, DWORD eOrigin);
+SIMCONNECTAPI SimConnect_StopRecorderAndSaveRecording(HANDLE hSimConnect, const char *szTitle, const char *szDescription, BOOL promptUser);
+SIMCONNECTAPI SimConnect_RequestRecordingInfo(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *szFileName);
+SIMCONNECTAPI SimConnect_RequestBookmarkInfo(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *szFileName, int bookmarkIndex);
+SIMCONNECTAPI SimConnect_ObserverTrackLocationOn(HANDLE hSimConnect, const char *szName, SIMCONNECT_DATA_LATLONALT TargetPosition);
+SIMCONNECTAPI SimConnect_ObserverTrackLocationOff(HANDLE hSimConnect, const char *szName);
+SIMCONNECTAPI SimConnect_SetObserverSceneryOrigin(HANDLE hSimConnect, const char *szName, DWORD eOrigin);
 SIMCONNECTAPI SimConnect_RequestTrafficSettings(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_SetTrafficSettings(HANDLE hSimConnect, UINT uAirlineDensity, UINT uGADensity, UINT uRoadTrafficDensity, UINT uShipsAndFerriesDensity, UINT uLeisureBoatDensity, SIMCONNECT_DYNAMIC_FREQUENCY eAirportVehicleDensity, BOOL bIFROnly);
 SIMCONNECTAPI SimConnect_RequestJoystickDeviceInfo(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_RequestMobileSceneryInRadius(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, DWORD dwRadiusMeters);
 SIMCONNECTAPI SimConnect_RequestMobileSceneryDataByID(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, SIMCONNECT_OBJECT_ID ObjectID);
-SIMCONNECTAPI SimConnect_CaptureImage(HANDLE hSimConnect, const char * szFileName, const char * szFilePath, UINT uImageFormat, const char * szViewName, BOOL bFileNameContainsExtension = FALSE);
-SIMCONNECTAPI SimConnect_BeginVideoStream(HANDLE hSimConnect, const char * szViewName, SIMCONNECT_DATA_VIDEO_STREAM_INFO StreamInfo);
-SIMCONNECTAPI SimConnect_EndVideoStream(HANDLE hSimConnect, const char * szViewName, SIMCONNECT_DATA_VIDEO_STREAM_INFO StreamInfo);
-SIMCONNECTAPI SimConnect_InsertStringW(BYTE * pDest, DWORD cbDest, BYTE ** ppEnd, DWORD * pcbStringV, const wchar_t * pSource);
-SIMCONNECTAPI SimConnect_RetrieveStringW(SIMCONNECT_RECV * pData, DWORD cbData, void * pStringV, wchar_t ** pszString, DWORD * pcbString);
+SIMCONNECTAPI SimConnect_CaptureImage(HANDLE hSimConnect, const char *szFileName, const char *szFilePath, UINT uImageFormat, const char *szViewName, BOOL bFileNameContainsExtension = FALSE);
+SIMCONNECTAPI SimConnect_BeginVideoStream(HANDLE hSimConnect, const char *szViewName, SIMCONNECT_DATA_VIDEO_STREAM_INFO StreamInfo);
+SIMCONNECTAPI SimConnect_EndVideoStream(HANDLE hSimConnect, const char *szViewName, SIMCONNECT_DATA_VIDEO_STREAM_INFO StreamInfo);
+SIMCONNECTAPI SimConnect_InsertStringW(BYTE *pDest, DWORD cbDest, BYTE **ppEnd, DWORD *pcbStringV, const wchar_t *pSource);
+SIMCONNECTAPI SimConnect_RetrieveStringW(SIMCONNECT_RECV *pData, DWORD cbData, void *pStringV, wchar_t **pszString, DWORD *pcbString);
 SIMCONNECTAPI SimConnect_TransmitClientEvent64(HANDLE hSimConnect, SIMCONNECT_OBJECT_ID ObjectID, SIMCONNECT_CLIENT_EVENT_ID EventID, QWORD qwData, SIMCONNECT_NOTIFICATION_GROUP_ID GroupID, SIMCONNECT_EVENT_FLAG Flags);
-SIMCONNECTAPI SimConnect_MenuAddItem64(HANDLE hSimConnect, const char * szMenuItem, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, QWORD qwData);
-SIMCONNECTAPI SimConnect_MenuAddSubItem64(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, const char * szMenuItem, SIMCONNECT_CLIENT_EVENT_ID SubMenuEventID, QWORD qwData);
+SIMCONNECTAPI SimConnect_MenuAddItem64(HANDLE hSimConnect, const char *szMenuItem, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, QWORD qwData);
+SIMCONNECTAPI SimConnect_MenuAddSubItem64(HANDLE hSimConnect, SIMCONNECT_CLIENT_EVENT_ID MenuEventID, const char *szMenuItem, SIMCONNECT_CLIENT_EVENT_ID SubMenuEventID, QWORD qwData);
 
 
 #endif // _SIMCONNECT_H_
