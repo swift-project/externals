@@ -13,6 +13,7 @@
 #define P3D_SDK_V41 410
 #define P3D_SDK_V42 420
 #define P3D_SDK_V43 430
+#define P3D_SDK_V44 440
 
 #define P3D_SDK_VERSION 400
 
