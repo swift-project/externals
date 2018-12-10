@@ -1595,7 +1595,11 @@ SIMCONNECTAPI SimConnect_RequestLandingTriggerLandingInfoCount(HANDLE hSimConnec
 SIMCONNECTAPI SimConnect_RequestLandingTriggerLandingInfoByIndex(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const GUID landingTriggerInstanceID, int landingIndex);
 SIMCONNECTAPI SimConnect_RequestSessionDuration(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID);
 SIMCONNECTAPI SimConnect_RequestAttachPointData(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, DWORD dwObjectID, const char *szAttachPointName, BOOL bRequestWorldCoordinates = FALSE);
-SIMCONNECTAPI SimConnect_PlaybackRecording(HANDLE hSimConnect, const char *szFileName, int bookmarkIndex, double endTimeInSeconds);
+#if P3D_SDK_VERSION >= P3D_SDK_V44
+    SIMCONNECTAPI SimConnect_PlaybackRecording(HANDLE hSimConnect, const char * szFileName, int bookmarkIndex, double endTimeInSeconds, BOOL bDisplayPlaybackCompleteDialog = TRUE);
+#else
+    SIMCONNECTAPI SimConnect_PlaybackRecording(HANDLE hSimConnect, const char *szFileName, int bookmarkIndex, double endTimeInSeconds);
+#endif
 SIMCONNECTAPI SimConnect_StartRecorder(HANDLE hSimConnect);
 SIMCONNECTAPI SimConnect_StopRecorderAndSaveRecording(HANDLE hSimConnect, const char *szTitle, const char *szDescription, BOOL promptUser);
 SIMCONNECTAPI SimConnect_RequestRecordingInfo(HANDLE hSimConnect, SIMCONNECT_DATA_REQUEST_ID RequestID, const char *szFileName);
