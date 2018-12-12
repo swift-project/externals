@@ -72,7 +72,7 @@ class ProcessInfo {
     //! \brief The `ACCESS_MASK` for the handle in this process.
     //!
     //! See
-    //! http://blogs.msdn.com/b/openspecification/archive/2010/04/01/about-the-access-mask-structure.aspx
+    //! https://blogs.msdn.microsoft.com/openspecification/2010/04/01/about-the-access_mask-structure/
     //! for more information.
     uint32_t granted_access;
 
@@ -170,6 +170,7 @@ class ProcessInfo {
                              bool is_64_bit,
                              ProcessInfo* process_info);
 
+  // This function is best-effort under low memory conditions.
   std::vector<Handle> BuildHandleVector(HANDLE process) const;
 
   pid_t process_id_;
@@ -187,9 +188,9 @@ class ProcessInfo {
   // the presumed alignment and emits SSE instructions that require aligned
   // storage. clang-cl should relax (unfortunately), but in the mean time, this
   // provides aligned storage. See https://crbug.com/564691 and
-  // http://llvm.org/PR25779.
+  // https://llvm.org/PR25779.
   //
-  // TODO(mark): Remove this workaround when http://llvm.org/PR25779 is fixed
+  // TODO(mark): Remove this workaround when https://llvm.org/PR25779 is fixed
   // and the fix is present in the clang-cl that compiles this code.
   MemoryBasicInformation64Vector memory_info_;
 

@@ -19,8 +19,8 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/macros.h"
+#include "util/file/file_reader.h"
 #include "util/net/http_headers.h"
 
 namespace crashpad {
@@ -34,6 +34,15 @@ class HTTPMultipartBuilder {
   HTTPMultipartBuilder();
   ~HTTPMultipartBuilder();
 
+  //! \brief Enables or disables `gzip` compression.
+  //!
+  //! \param[in] gzip_enabled Whether to enable or disable `gzip` compression.
+  //!
+  //! When `gzip` compression is enabled, the body stream returned by
+  //! GetBodyStream() will be `gzip`-compressed, and the content headers set by
+  //! PopulateContentHeaders() will contain `Content-Encoding: gzip`.
+  void SetGzipEnabled(bool gzip_enabled);
+
   //! \brief Sets a `Content-Disposition: form-data` key-value pair.
   //!
   //! \param[in] key The key of the form data, specified as the `name` in the
@@ -42,7 +51,7 @@ class HTTPMultipartBuilder {
   //! \param[in] value The value to set at the \a key.
   void SetFormData(const std::string& key, const std::string& value);
 
-  //! \brief Specifies the file at \a path to have its contents uploaded as
+  //! \brief Specifies the contents read from \a reader to be uploaded as
   //!     multipart data, available at `name` of \a upload_file_name.
   //!
   //! \param[in] key The key of the form data, specified as the `name` in the
@@ -50,12 +59,13 @@ class HTTPMultipartBuilder {
   //!     key will be overwritten.
   //! \param[in] upload_file_name The `filename` to specify for this multipart
   //!     data attachment.
-  //! \param[in] path The path of the file whose contents will be uploaded.
+  //! \param[in] reader A FileReaderInterface from which to read the content to
+  //!     upload.
   //! \param[in] content_type The `Content-Type` to specify for the attachment.
   //!     If this is empty, `"application/octet-stream"` will be used.
   void SetFileAttachment(const std::string& key,
                          const std::string& upload_file_name,
-                         const base::FilePath& path,
+                         FileReaderInterface* reader,
                          const std::string& content_type);
 
   //! \brief Generates the HTTPBodyStream for the data currently supplied to
@@ -64,14 +74,17 @@ class HTTPMultipartBuilder {
   //! \return A caller-owned HTTPBodyStream object.
   std::unique_ptr<HTTPBodyStream> GetBodyStream();
 
-  //! \brief Gets the header pair for `"Content-Type"`.
-  HTTPHeaders::value_type GetContentType() const;
+  //! \brief Adds the appropriate content headers to \a http_headers.
+  //!
+  //! Any headers that this method adds will replace existing headers by the
+  //! same name in \a http_headers.
+  void PopulateContentHeaders(HTTPHeaders* http_headers) const;
 
  private:
   struct FileAttachment {
     std::string filename;
     std::string content_type;
-    base::FilePath path;
+    FileReaderInterface* reader;
   };
 
   // Removes elements from both data maps at the specified |key|, to ensure
@@ -81,6 +94,7 @@ class HTTPMultipartBuilder {
   std::string boundary_;
   std::map<std::string, std::string> form_data_;
   std::map<std::string, FileAttachment> file_attachments_;
+  bool gzip_enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(HTTPMultipartBuilder);
 };

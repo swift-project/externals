@@ -25,11 +25,16 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "util/misc/initialization_state.h"
 #include "util/misc/initialization_state_dcheck.h"
 
 #if defined(OS_MACOSX)
 #include <mach/mach.h>
 #include <sys/sysctl.h>
+#endif
+
+#if defined(OS_LINUX) || defined(OS_ANDROID)
+#include "util/linux/ptrace_connection.h"
 #endif
 
 namespace crashpad {
@@ -39,6 +44,24 @@ class ProcessInfo {
   ProcessInfo();
   ~ProcessInfo();
 
+#if defined(OS_LINUX) || defined(OS_ANDROID) || DOXYGEN
+  //! \brief Initializes this object with information about the process whose ID
+  //!     is \a pid using a PtraceConnection \a connection.
+  //!
+  //! This method must be called successfully prior to calling any other method
+  //! in this class. This method may only be called once.
+  //!
+  //! It is unspecified whether the information that an object of this class
+  //! returns is loaded at the time Initialize() is called or subsequently, and
+  //! whether this information is cached in the object or not.
+  //!
+  //! \param[in] connection A connection to the remote process.
+  //!
+  //! \return `true` on success, `false` on failure with a message logged.
+  bool InitializeWithPtrace(PtraceConnection* connection);
+#endif  // OS_LINUX || OS_ANDROID || DOXYGEN
+
+#if defined(OS_MACOSX) || DOXYGEN
   //! \brief Initializes this object with information about the process whose ID
   //!     is \a pid.
   //!
@@ -52,19 +75,18 @@ class ProcessInfo {
   //! \param[in] pid The process ID to obtain information for.
   //!
   //! \return `true` on success, `false` on failure with a message logged.
-  bool Initialize(pid_t pid);
+  bool InitializeWithPid(pid_t pid);
 
-#if defined(OS_MACOSX) || DOXYGEN
   //! \brief Initializes this object with information about a process based on
   //!     its Mach task.
   //!
-  //! This method serves as a stand-in for Initialize() and may be called in its
-  //! place with the same restrictions and considerations.
+  //! This method serves as a stand-in for InitializeWithPid() and may be called
+  //! in its place with the same restrictions and considerations.
   //!
   //! \param[in] task The Mach task to obtain information for.
   //!
   //! \return `true` on success, `false` on failure with an message logged.
-  bool InitializeFromTask(task_t task);
+  bool InitializeWithTask(task_t task);
 #endif
 
   //! \return The target task’s process ID.
@@ -113,13 +135,18 @@ class ProcessInfo {
   //! `execve()` as a result of executing a setuid or setgid executable.
   bool DidChangePrivileges() const;
 
+  //! \brief Determines the target process’ bitness.
+  //!
   //! \return `true` if the target task is a 64-bit process.
   bool Is64Bit() const;
 
   //! \brief Determines the target process’ start time.
   //!
   //! \param[out] start_time The time that the process started.
-  void StartTime(timeval* start_time) const;
+  //!
+  //! \return `true` on success, with \a start_time set. Otherwise, `false` with
+  //!     a message logged.
+  bool StartTime(timeval* start_time) const;
 
   //! \brief Obtains the arguments used to launch a process.
   //!
@@ -141,6 +168,25 @@ class ProcessInfo {
  private:
 #if defined(OS_MACOSX)
   kinfo_proc kern_proc_info_;
+#elif defined(OS_LINUX) || defined(OS_ANDROID)
+  // Some members are marked mutable so that they can be lazily initialized by
+  // const methods. These are always InitializationState-protected so that
+  // multiple successive calls will always produce the same return value and out
+  // parameters. This is necessary for intergration with the Snapshot interface.
+  // See https://crashpad.chromium.org/bug/9.
+  PtraceConnection* connection_;
+  std::set<gid_t> supplementary_groups_;
+  mutable timeval start_time_;
+  pid_t pid_;
+  pid_t ppid_;
+  uid_t uid_;
+  uid_t euid_;
+  uid_t suid_;
+  gid_t gid_;
+  gid_t egid_;
+  gid_t sgid_;
+  bool is_64_bit_;
+  mutable InitializationState start_time_initialized_;
 #endif
   InitializationStateDcheck initialized_;
 

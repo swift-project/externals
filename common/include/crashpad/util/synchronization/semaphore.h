@@ -15,12 +15,17 @@
 #ifndef CRASHPAD_UTIL_SYNCHRONIZATION_SEMAPHORE_H_
 #define CRASHPAD_UTIL_SYNCHRONIZATION_SEMAPHORE_H_
 
+#include <limits>
+
 #include "build/build_config.h"
 
 #if defined(OS_MACOSX)
 #include <dispatch/dispatch.h>
 #elif defined(OS_WIN)
 #include <windows.h>
+#elif defined(OS_ANDROID)
+#include <condition_variable>
+#include <mutex>
 #else
 #include <semaphore.h>
 #endif
@@ -30,6 +35,10 @@ namespace crashpad {
 //! \brief An anonymous in-process counting sempahore.
 class Semaphore {
  public:
+  //! \brief A TimedWait() argument that causes an indefinite wait.
+  static constexpr double kIndefiniteWait =
+      std::numeric_limits<double>::infinity();
+
   //! \brief Initializes the semaphore.
   //!
   //! \param[in] value The initial value of the semaphore.
@@ -51,7 +60,8 @@ class Semaphore {
   //! \brief Performs a timed wait (or “procure”) operation on the semaphore.
   //!
   //! \param[in] seconds The maximum number of seconds to wait for the operation
-  //!     to complete.
+  //!     to complete. If \a seconds is #kIndefiniteWait, this method behaves as
+  //!     Wait(), and will not time out.
   //!
   //! \return `false` if the wait timed out, `true` otherwise.
   //!
@@ -70,6 +80,10 @@ class Semaphore {
   dispatch_semaphore_t semaphore_;
 #elif defined(OS_WIN)
   HANDLE semaphore_;
+#elif defined(OS_ANDROID)
+  std::condition_variable cv_;
+  std::mutex mutex_;
+  int value_;
 #else
   sem_t semaphore_;
 #endif

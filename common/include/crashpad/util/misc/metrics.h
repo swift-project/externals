@@ -30,8 +30,10 @@ namespace crashpad {
 //! Chromium's base, they allow integration with its metrics system.
 class Metrics {
  public:
-  //! \brief Values for CrashReportPending(). These are used as metrics
-  //!     enumeration values, so new values should always be added at the end.
+  //! \brief Values for CrashReportPending().
+  //!
+  //! \note These are used as metrics enumeration values, so new values should
+  //!     always be added at the end, before PendingReportReason::kMaxValue.
   enum class PendingReportReason : int32_t {
     //! \brief A report was newly created and is ready for upload.
     kNewlyCreated = 0,
@@ -48,13 +50,15 @@ class Metrics {
 
   //! \brief Reports the size of a crash report file in bytes. Should be called
   //!     when a new report is written to disk.
-  static void CrashReportSize(FileHandle file);
+  static void CrashReportSize(FileOffset size);
 
   //! \brief Reports on a crash upload attempt, and if it succeeded.
   static void CrashUploadAttempted(bool successful);
 
-  //! \brief Values for CrashUploadSkipped(). These are used as metrics
-  //!     enumeration values, so new values should always be added at the end.
+  //! \brief Values for CrashUploadSkipped().
+  //!
+  //! \note These are used as metrics enumeration values, so new values should
+  //!     always be added at the end, before CrashSkippedReason::kMaxValue.
   enum class CrashSkippedReason : int32_t {
     //! \brief Crash uploading is disabled.
     kUploadsDisabled = 0,
@@ -73,6 +77,10 @@ class Metrics {
     //!     server.
     kUploadFailed = 4,
 
+    //! \brief There was an error between accessing the report from the database
+    //!     and uploading it to the crash server.
+    kPrepareForUploadFailed = 5,
+
     //! \brief The number of values in this enumeration; not a valid value.
     kMaxValue
   };
@@ -81,8 +89,10 @@ class Metrics {
   //!     database, without the report being uploadad.
   static void CrashUploadSkipped(CrashSkippedReason reason);
 
-  //! \brief The result of capturing an exception. These are used as metrics
-  //!     enumeration values, so new values should always be added at the end.
+  //! \brief The result of capturing an exception.
+  //!
+  //! \note These are used as metrics enumeration values, so new values should
+  //!     always be added at the end, before CaptureResult::kMaxValue.
   enum class CaptureResult : int32_t {
     //! \brief The exception capture succeeded normally.
     kSuccess = 0,
@@ -113,6 +123,22 @@ class Metrics {
     //! \brief There was a database error in attempt to complete the report.
     kFinishedWritingCrashReportFailed = 7,
 
+    //! \brief An attempt to directly `ptrace` the target failed.
+    //!
+    //! This value is only used on Linux/Android.
+    kDirectPtraceFailed = 8,
+
+    //! \brief An attempt to `ptrace` via a PtraceBroker failed.
+    //!
+    //! This value is only used on Linux/Android.
+    kBrokeredPtraceFailed = 9,
+
+    //! \brief Sanitization was requested but could not be initialized.
+    kSanitizationInitializationFailed = 10,
+
+    //! \brief Sanitization caused this crash dump to be skipped.
+    kSkippedDueToSanitization = 11,
+
     //! \brief The number of values in this enumeration; not a valid value.
     kMaxValue
   };
@@ -129,6 +155,37 @@ class Metrics {
 
   //! \brief The exception handler server started capturing an exception.
   static void ExceptionEncountered();
+
+  //! \brief An important event in a handler process’ lifetime.
+  //!
+  //! \note These are used as metrics enumeration values, so new values should
+  //!     always be added at the end, before LifetimeMilestone::kMaxValue.
+  enum class LifetimeMilestone : int32_t {
+    //! \brief The handler process started.
+    kStarted = 0,
+
+    //! \brief The handler process exited normally and cleanly.
+    kExitedNormally,
+
+    //! \brief The handler process exited early, but was successful in
+    //!     performing some non-default action on user request.
+    kExitedEarly,
+
+    //! \brief The handler process exited with a failure code.
+    kFailed,
+
+    //! \brief The handler process was forcibly terminated.
+    kTerminated,
+
+    //! \brief The handler process crashed.
+    kCrashed,
+
+    //! \brief The number of values in this enumeration; not a valid value.
+    kMaxValue
+  };
+
+  //! \brief Records a handler start/exit/crash event.
+  static void HandlerLifetimeMilestone(LifetimeMilestone milestone);
 
   //! \brief The handler process crashed with the given exception code.
   //!
