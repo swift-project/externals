@@ -659,9 +659,14 @@ struct SIMCONNECT_DATA_XYZ
 //        End of Struct definitions
 //----------------------------------------------------------------------------
 
+#if defined(BUID_SIMCONNECT_LIB)
+#   define SIMCONNECT_EXPORT __declspec(dllexport)
+#else
+#   define SIMCONNECT_EXPORT __declspec(dllimport)
+#endif
 
 #if !defined(SIMCONNECTAPI)
-#define SIMCONNECTAPI extern "C" HRESULT __stdcall
+#define SIMCONNECTAPI extern "C" SIMCONNECT_EXPORT HRESULT __stdcall
 #endif
 
 
