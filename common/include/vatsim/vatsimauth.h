@@ -15,18 +15,18 @@
 extern "C" {
 #endif
 
-#include <cstdint>
+#include <stdint.h>
 
 #ifdef __cplusplus
 class vatsim_auth;
 #else
-typedef void *VatsimAuthentication;
+typedef void *vatsim_auth;
 #endif
 
-VATSIMAUTH_EXPORT vatsim_auth *vatsim_auth_create(std::uint16_t clientId, const char *privateKey);
+VATSIMAUTH_EXPORT vatsim_auth *vatsim_auth_create(uint16_t clientId, const char *privateKey);
 VATSIMAUTH_EXPORT void vatsim_auth_destroy(vatsim_auth *obj);
 
-VATSIMAUTH_EXPORT std::uint16_t vatsim_auth_get_client_id(const vatsim_auth * obj);
+VATSIMAUTH_EXPORT uint16_t vatsim_auth_get_client_id(const vatsim_auth * obj);
 VATSIMAUTH_EXPORT void vatsim_auth_set_initial_challenge(vatsim_auth *obj, const char *initialChallenge);
 VATSIMAUTH_EXPORT void vatsim_auth_generate_response(vatsim_auth *obj, const char *challenge, char *response);
 VATSIMAUTH_EXPORT void vatsim_auth_generate_challenge(const vatsim_auth *obj, char *challenge);
